@@ -1,0 +1,23 @@
+from firebase_admin import db
+from src.modules.SnapshotManaging.dtos.BuildingRegistry import BuildingRegistry
+from typing import Optional
+from src.utils.threads import threadPoolSubmitter
+
+
+class RealtimeDatabaseDao:
+
+    def _touchBuildingRegistry(self, registryId: str, metadata: BuildingRegistry):
+        ref = db.reference(
+            f"建物/{metadata.謄本核發機關}/{metadata.行政區}/{metadata.地段}/{metadata.小段}/{metadata.建號}"
+        )
+        record: Optional[dict] = ref.get()
+        renewing = False
+        if record is not None:
+            updatedAt, registryId = next(iter(record.items()))
+            renewing = int(updatedAt) >= metadata.列印時間
+        if renewing:
+            ref.set({metadata.列印時間: registryId})
+
+    async def touchBuildingRegistry(self, registryId: str, metadata: BuildingRegistry):
+        async with threadPoolSubmitter() as submit:
+            return await submit(self._touchBuildingRegistry, registryId, metadata)
