@@ -1,0 +1,6 @@
+pytest
+pytest-asyncio
+pytest-it
+python-magic
+autopep8
+flake8

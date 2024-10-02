@@ -1,0 +1,17 @@
+uvicorn
+starlette
+firebase-admin
+aiofile
+google-cloud-pubsub
+dependency-injector
+pymupdf
+aiohttp
+marshmallow
+psutil
+google-cloud-firestore
+openai
+python-magic
+async-typer
+aiocsv
+tiktoken
+commentjson
