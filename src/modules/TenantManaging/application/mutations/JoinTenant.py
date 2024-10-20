@@ -9,6 +9,7 @@ from src.modules.TenantManaging.errors.JoinRequestRejected import JoinRequestRej
 from src.modules.TenantManaging.errors.JoinRequestAlreadySubmitted import JoinRequestAlreadySubmitted
 from src.modules.TenantManaging.errors.HasJoinedTenant import HasJoinedTenant
 from src.modules.TenantManaging.dtos.JoiningTenant import JoiningTenant
+from src.modules.IdentityAndAccessManaging.dtos.PermissionStatuses import PermissionStatuses
 
 
 class JoinTenant:

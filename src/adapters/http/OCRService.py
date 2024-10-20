@@ -13,13 +13,13 @@ class OCRService:
     async def ocr(self, buffer: bytes, language: str = 'cht'):
         base64Encoded = b64encode(buffer).decode('utf-8')
         base64Image = f'data:image/jpeg;base64,{base64Encoded}'
-        data = {
+        body = {
             'apikey': self._apiKey,
             'language': language,
             'base64Image': base64Image,
         }
         async with ClientSession() as session:
-            async with session.post(self._endpoint, data=data) as response:
+            async with session.post(self._endpoint, data=body) as response:
                 payload = await response.json()
                 if 'ParsedResults' not in payload:
                     return None

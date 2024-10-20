@@ -11,4 +11,3 @@ psutil
 google-cloud-firestore
 openai
 python-magic
-Pillow

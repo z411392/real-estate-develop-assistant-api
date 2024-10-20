@@ -23,8 +23,7 @@ class RegistryDao:
         return int(queryResult.value)
 
     async def registriesAvailable(
-        self,
-        snapshotId: str,
+        self, snapshotId: str,
     ):
         registryIds: List[str] = []
         stream = (
@@ -46,7 +45,7 @@ class RegistryDao:
             break
         return registry
 
-    async def _inIds(self, *registryIds: List[str]):
+    async def inIds(self, *registryIds: List[str]):
         stream = self._collection.where(
             filter=FieldFilter(
                 FieldPath.document_id(),
@@ -54,6 +53,7 @@ class RegistryDao:
                 [self._collection.document(registryId) for registryId in registryIds],
             )
         ).stream()
+
         ids: List[str] = []
         mapping: Mapping[str, Registry] = {}
         async for document in stream:
@@ -73,9 +73,3 @@ class RegistryDao:
             if registry is None:
                 continue
             yield registry
-
-    async def inIds(self, *registryIds: List[str]):
-        batchSize = 30
-        for index in range(0, len(registryIds), batchSize):
-            async for registry in self._inIds(*registryIds[index: index + batchSize]):
-                yield registry
