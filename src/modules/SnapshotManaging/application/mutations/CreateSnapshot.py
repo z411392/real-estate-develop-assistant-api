@@ -1,7 +1,7 @@
-from pymupdf import Document
+from pymupdf import Document, Pixmap
 from src.utils.development import createElapsedTimeProfiler
 from src.utils.storage import filePathFor, existObject, putObject, getObjectMetaData
-from src.adapters.http.OCRService import OCRService
+from src.adapters.http.CloudVisionService import CloudVisionService
 from os import getenv
 from io import StringIO
 from src.utils.development import createLogger
@@ -23,39 +23,19 @@ from typing import List
 
 class CreateSnapshot:
     _logger: Logger
-    _ocrService: OCRService
+    _ocrService: CloudVisionService
     _snapshotRepository: SnapshotRepository
     _ownershipRepository: OwnershipRepository
     _registryRepository: RegistryRepository
 
     def __init__(self, db: AsyncClient, transaction: AsyncTransaction):
         self._logger = createLogger(__name__)
-        self._ocrService = OCRService(apiKey=getenv("OCRSPACE_API_KEY"))
+        self._ocrService = CloudVisionService(apiKey=getenv("GOOGLE_CLOUD_API_KEY"))
         self._snapshotRepository = SnapshotRepository(db=db, transaction=transaction)
         self._ownershipRepository = OwnershipRepository(db=db, transaction=transaction)
         self._registryRepository = RegistryRepository(db=db, transaction=transaction)
 
-    def _extractBlocks(self, buffer: bytes):
-        doc = Document(stream=buffer)
-        for page in doc:
-            dict = page.get_text("dict")
-            blocks = dict["blocks"]
-            for block in blocks:
-                yield block
-
-    def _extractFromTextBlock(self, block: dict):
-        for line in block["lines"]:
-            for span in line["spans"]:
-                text: str = span["text"]
-                yield text.strip()
-
-    async def _extractFromImageBlock(self, block: dict):
-        width: int = block["width"]
-        height: int = block["height"]
-        ratio = width // height
-        if ratio < 2:
-            return None
-        buffer: bytes = block["image"]
+    async def _extractFromImage(self, buffer: bytes):
         filePath = filePathFor(buffer)
         if await existObject(filePath):
             metadata = await getObjectMetaData(filePath)
@@ -65,21 +45,19 @@ class CreateSnapshot:
             await putObject(buffer, dict(text=text))
             return text
 
-    async def _extractContents(self, buffer: bytes):
-        for block in self._extractBlocks(buffer):
-            if block["type"] == 0:
-                for content in self._extractFromTextBlock(block):
-                    if content:
-                        yield f"\n{content}"
-            if block["type"] == 1:
-                content = await self._extractFromImageBlock(block)
-                if content:
-                    yield f"\n{content}"
+    async def _extractContentsFromImages(self, stream: bytes):
+        doc = Document(stream=stream)
+        for page in doc:
+            pixmap: Pixmap = page.get_pixmap()
+            buffer = pixmap.tobytes()
+            text = await self._extractFromImage(buffer)
+            yield text
 
     async def _extractFromPDF(self, buffer: bytes):
         text = StringIO()
-        async for content in self._extractContents(buffer):
-            text.write(content)
+        async for content in self._extractContentsFromImages(buffer):
+            if content:
+                text.write(content)
         return text.getvalue()
 
     async def _scanPDF(self, filePath: str, buffer: bytes):
@@ -92,10 +70,12 @@ class CreateSnapshot:
         await putObject(buffer, dict(text=text))
         return text
 
-    async def _createRegistry(self, filePath: str, text: str, userId: str):
+    async def _parseSnapshot(self, filePath: str, text: str, userId: str):
         if search("建物登記第二類謄本", text, IGNORECASE):
-            texts = split(".*本謄本列印完畢.*", text)
-            texts = [texts[-1] + texts[0], *texts[1:-1]]
+            texts = split("本謄本列印完畢", text)
+            if len(texts) == 0:
+                return None
+            texts = [*texts[:-1]]
             snapshotId = self._snapshotRepository.nextId(
                 snapshotType=SnapshotTypes.Buildings, filePath=filePath
             )
@@ -132,7 +112,7 @@ class CreateSnapshot:
         @todo 之後要多檢查／扣除 tenant 的 credits。
         """
         text = await self._scanPDF(filePath, buffer)
-        pair = await self._createRegistry(filePath, text, userId)
+        pair = await self._parseSnapshot(filePath, text, userId)
         if pair is None:
             return None
         snapshot, registries = pair
