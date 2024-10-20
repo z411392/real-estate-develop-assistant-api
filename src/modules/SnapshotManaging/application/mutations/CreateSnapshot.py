@@ -70,17 +70,20 @@ class CreateSnapshot:
             if block["type"] == 0:
                 for content in self._extractFromTextBlock(block):
                     if content:
-                        yield f"\n{content}"
+                        yield True, f"\n{content}"
             if block["type"] == 1:
                 content = await self._extractFromImageBlock(block)
                 if content:
-                    yield f"\n{content}"
+                    yield False, f"\n{content}"
 
     async def _extractFromPDF(self, buffer: bytes):
         text = StringIO()
-        async for content in self._extractContents(buffer):
+        textsCount = 0
+        async for isText, content in self._extractContents(buffer):
             text.write(content)
-        return text.getvalue()
+            if isText:
+                textsCount += 1
+        return text.getvalue() if textsCount > 0 else ""
 
     async def _scanPDF(self, filePath: str, buffer: bytes):
         if await existObject(filePath):
