@@ -42,8 +42,8 @@ from src.modules.TenantManaging.presentation.http.onCreatingTenant import (
 from src.modules.TenantManaging.presentation.http.onRetrievingTenant import (
     onRetrievingTenant,
 )
-from src.modules.SnapshotManaging.presentation.http.onCreatingSnapshot import (
-    onCreatingSnapshot,
+from src.modules.SnapshotManaging.presentation.http.onUploadingSnapshot import (
+    onUploadingSnapshot,
 )
 from src.modules.TenantManaging.presentation.http.onJoiningTenant import onJoiningTenant
 from src.modules.TenantManaging.presentation.http.onReviewingTenantJoining import (
@@ -153,7 +153,7 @@ def createApp():
                 ),
                 Route("/snapshots", endpoint=onCountingSnapshots, methods=["HEAD"]),
                 Route("/snapshots", endpoint=onListingSnapshots, methods=["GET"]),
-                Route("/snapshots", endpoint=onCreatingSnapshot, methods=["POST"]),
+                Route("/snapshots", endpoint=onUploadingSnapshot, methods=["POST"]),
                 Mount(
                     path="/snapshots/{snapshotId}",
                     middleware=[

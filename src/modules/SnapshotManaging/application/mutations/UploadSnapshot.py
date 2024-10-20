@@ -21,7 +21,7 @@ from src.modules.SnapshotManaging.dtos.RegistryStatuses import RegistryStatuses
 from typing import List
 
 
-class CreateSnapshot:
+class UploadSnapshot:
     _logger: Logger
     _ocrService: OCRService
     _snapshotRepository: SnapshotRepository
