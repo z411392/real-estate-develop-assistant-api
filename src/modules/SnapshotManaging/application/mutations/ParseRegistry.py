@@ -43,7 +43,7 @@ class ParseRegistry:
     async def _parseBuildingRegistry(self, registryId: str, registry: Registry):
         if registry.metadata is not None:
             registry.metadata = BuildingRegistry(**registry.metadata)
-        if registry.status == RegistryStatuses.Pending:
+        if registry.status == RegistryStatuses.Pending or registry.status == RegistryStatuses.Failed:
             registry.status = RegistryStatuses.Doing
             registry.metadata = None
             await self._registryRepository.set(registryId, registry)

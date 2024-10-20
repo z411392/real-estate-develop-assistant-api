@@ -96,7 +96,7 @@ class UploadSnapshot:
         return text
 
     async def _createRegistry(self, filePath: str, text: str, userId: str):
-        if search("建物登記第二類謄本", text, IGNORECASE):
+        if search(r"建物登記第(?:一|二|三)類謄本", text, IGNORECASE):
             texts = split(".*本謄本列印完畢.*", text)
             texts = [texts[-1] + texts[0], *texts[1:-1]]
             snapshotId = self._snapshotRepository.nextId(
