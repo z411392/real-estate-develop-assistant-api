@@ -13,16 +13,20 @@ class UserDao:
         return users
 
     async def inIds(self, *userIds: List[str]):
+        batchSize = 100
         async with threadPoolSubmitter() as submit:
-            users = await submit(self._inIds, *userIds)
-            for user in users:
-                yield User(
-                    id=user.uid,
-                    photoURL=user.photo_url,
-                    displayName=user.display_name,
-                    createdAt=user.user_metadata.creation_timestamp,
-                    updatedAt=user.user_metadata.last_refresh_timestamp,
+            for index in range(0, len(userIds), batchSize):
+                users: List[UserRecord] = await submit(
+                    self._inIds, *userIds[index: index + batchSize]
                 )
+                for user in users:
+                    yield User(
+                        id=user.uid,
+                        photoURL=user.photo_url,
+                        displayName=user.display_name,
+                        createdAt=user.user_metadata.creation_timestamp,
+                        updatedAt=user.user_metadata.last_refresh_timestamp,
+                    )
 
     async def byId(self, userId: str):
         user: Optional[UserRecord] = None
