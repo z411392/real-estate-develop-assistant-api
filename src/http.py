@@ -12,62 +12,62 @@ from starlette.responses import JSONResponse, PlainTextResponse
 from traceback import format_exc
 from src.utils.development import onDevelopment
 from src.constants import Collections
-from src.modules.IdentityAndAccessManaging.presentation.http.withIdentityResolving import (
+from src.modules.IdentityAndAccessManaging.presentation.middlewares.withIdentityResolving import (
     withIdentityResolving,
 )
-from src.modules.IdentityAndAccessManaging.presentation.http.withPermissionResolving import (
+from src.modules.IdentityAndAccessManaging.presentation.middlewares.withPermissionResolving import (
     withPermissionResolving,
 )
-from src.modules.IdentityAndAccessManaging.presentation.http.withOwnershipResolving import (
+from src.modules.IdentityAndAccessManaging.presentation.middlewares.withOwnershipResolving import (
     withOwnershipResolving,
 )
-from src.modules.SystemMaintaining.presentation.http.onCheckingLiveness import (
+from src.modules.SystemMaintaining.presentation.controllers.onCheckingLiveness import (
     onCheckingLiveness,
 )
-from src.modules.SystemMaintaining.presentation.http.onCheckingReadiness import (
+from src.modules.SystemMaintaining.presentation.controllers.onCheckingReadiness import (
     onCheckingReadiness,
 )
-from src.modules.SystemMaintaining.presentation.http.onRetrievingSystemInfo import (
+from src.modules.SystemMaintaining.presentation.controllers.onRetrievingSystemInfo import (
     onRetrievingSystemInfo,
 )
-from src.modules.TenantManaging.presentation.http.onListingTenants import (
+from src.modules.TenantManaging.presentation.controllers.onListingTenants import (
     onListingTenants,
 )
-from src.modules.TenantManaging.presentation.http.onCountingTenants import (
+from src.modules.TenantManaging.presentation.controllers.onCountingTenants import (
     onCountingTenants,
 )
-from src.modules.TenantManaging.presentation.http.onCreatingTenant import (
+from src.modules.TenantManaging.presentation.controllers.onCreatingTenant import (
     onCreatingTenant,
 )
-from src.modules.TenantManaging.presentation.http.onRetrievingTenant import (
+from src.modules.TenantManaging.presentation.controllers.onRetrievingTenant import (
     onRetrievingTenant,
 )
-from src.modules.SnapshotManaging.presentation.http.onUploadingSnapshot import (
+from src.modules.SnapshotManaging.presentation.controllers.onUploadingSnapshot import (
     onUploadingSnapshot,
 )
-from src.modules.TenantManaging.presentation.http.onJoiningTenant import onJoiningTenant
-from src.modules.TenantManaging.presentation.http.onReviewingTenantJoining import (
+from src.modules.TenantManaging.presentation.controllers.onJoiningTenant import onJoiningTenant
+from src.modules.TenantManaging.presentation.controllers.onReviewingTenantJoining import (
     onReviewingTenantJoining,
 )
-from src.modules.SnapshotManaging.presentation.http.onParsingRegistry import (
+from src.modules.SnapshotManaging.presentation.controllers.onParsingRegistry import (
     onParsingRegistry,
 )
-from src.modules.SnapshotManaging.presentation.http.onCountingSnapshots import (
+from src.modules.SnapshotManaging.presentation.controllers.onCountingSnapshots import (
     onCountingSnapshots,
 )
-from src.modules.SnapshotManaging.presentation.http.onListingSnapshots import (
+from src.modules.SnapshotManaging.presentation.controllers.onListingSnapshots import (
     onListingSnapshots,
 )
-from src.modules.SnapshotManaging.presentation.http.onCountingRegistries import (
+from src.modules.SnapshotManaging.presentation.controllers.onCountingRegistries import (
     onCountingRegistries,
 )
-from src.modules.SnapshotManaging.presentation.http.onListingRegistries import (
+from src.modules.SnapshotManaging.presentation.controllers.onListingRegistries import (
     onListingRegistries,
 )
-from src.modules.SnapshotManaging.presentation.http.onRetrievingSnapshot import (
+from src.modules.SnapshotManaging.presentation.controllers.onRetrievingSnapshot import (
     onRetrievingSnapshot,
 )
-from src.modules.SnapshotManaging.presentation.http.onRetrievingRegistry import (
+from src.modules.SnapshotManaging.presentation.controllers.onRetrievingRegistry import (
     onRetrievingRegistry,
 )
 from src.modules.IdentityAndAccessManaging.errors.UserUnauthenticated import (
