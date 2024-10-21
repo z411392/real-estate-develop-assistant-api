@@ -8,7 +8,6 @@ from src.modules.IdentityAndAccessManaging.dtos.PermissionStatuses import Permis
 from src.modules.TenantManaging.errors.JoinRequestRejected import JoinRequestRejected
 from src.modules.TenantManaging.errors.JoinRequestAlreadySubmitted import JoinRequestAlreadySubmitted
 from src.modules.TenantManaging.errors.HasJoinedTenant import HasJoinedTenant
-from src.modules.TenantManaging.dtos.JoiningTenant import JoiningTenant
 
 
 class JoinTenant:
@@ -23,10 +22,9 @@ class JoinTenant:
             self,
             userId: str,
             tenantId: str,
-            mutation: JoiningTenant,
     ):
         permissionId = PermissionRepository.nextId(
-            tenantId=tenantId, userId=mutation.userId)
+            tenantId=tenantId, userId=userId)
         permissionSnapshot = await self._permissionRepository.get(permissionId)
         if permissionSnapshot.exists:
             permission = Permission(**permissionSnapshot.to_dict(), id=permissionId, createdAt=permissionSnapshot.create_time, updatedAt=permissionSnapshot.update_time)
@@ -37,7 +35,7 @@ class JoinTenant:
             else:
                 raise HasJoinedTenant()
         permission = Permission(
-            userId=mutation.userId,
+            userId=userId,
             tenantId=tenantId,
             role=Roles.Member,
             status=PermissionStatuses.Pending,

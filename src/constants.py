@@ -17,6 +17,7 @@ class DatetimeFormats(str, Enum):
 class PageSizes(int, Enum):
     Tenants = 20
     Snapshots = 20
+    Users = 20
 
 
 class Collections(str, Enum):

@@ -9,12 +9,12 @@ from src.modules.TenantManaging.application.mutations.ReviewTenantJoining import
 async def onReviewingTenantJoining(request: Request):
     credentials = ensureUserIsAuthenticated(request)
     tenant = ensureTenantIsSpecified(request)
-    ensureUserHasPermission(request, mustBeOwner=True)
+    permission = ensureUserHasPermission(request, mustBeOwner=True)
     mutation = await ReviewingTenantJoining.fromRequest(request)
-    db = client()
-    payload = dict()
-    async with db.transaction() as transaction:
-        reviewTenantJoining = ReviewTenantJoining(db=db, transaction=transaction)
-        permissionId = await reviewTenantJoining(credentials.uid, tenant.id, mutation)
-        payload.update(permissionId=permissionId)
+    payload = dict(permissionId=mutation.permissionId)
+    if permission.id != mutation.permissionId:
+        db = client()
+        async with db.transaction() as transaction:
+            reviewTenantJoining = ReviewTenantJoining(db=db, transaction=transaction)
+            await reviewTenantJoining(credentials.uid, tenant.id, mutation)
     return JSONResponse(dict(payload=payload))

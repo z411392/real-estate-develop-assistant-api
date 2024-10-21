@@ -45,7 +45,9 @@ from src.modules.TenantManaging.presentation.controllers.onRetrievingTenant impo
 from src.modules.SnapshotManaging.presentation.controllers.onUploadingSnapshot import (
     onUploadingSnapshot,
 )
-from src.modules.TenantManaging.presentation.controllers.onJoiningTenant import onJoiningTenant
+from src.modules.TenantManaging.presentation.controllers.onJoiningTenant import (
+    onJoiningTenant,
+)
 from src.modules.TenantManaging.presentation.controllers.onReviewingTenantJoining import (
     onReviewingTenantJoining,
 )
@@ -66,6 +68,18 @@ from src.modules.SnapshotManaging.presentation.controllers.onListingRegistries i
 )
 from src.modules.SnapshotManaging.presentation.controllers.onRetrievingRegistry import (
     onRetrievingRegistry,
+)
+from src.modules.TenantManaging.presentation.controllers.onRetrievingMyPermission import (
+    onRetrievingMyPermission,
+)
+from src.modules.IdentityAndAccessManaging.presentation.controllers.onCountingUsers import (
+    onCountingUsers,
+)
+from src.modules.IdentityAndAccessManaging.presentation.controllers.onListingUsers import (
+    onListingUsers,
+)
+from src.modules.IdentityAndAccessManaging.presentation.controllers.onRetrievingPermission import (
+    onRetrievingPermission,
 )
 from src.modules.IdentityAndAccessManaging.errors.UserUnauthenticated import (
     UserUnauthenticated,
@@ -144,10 +158,22 @@ def createApp():
                 Route("/", endpoint=onRetrievingTenant, methods=["GET"]),
                 Route("/permissions", endpoint=onJoiningTenant, methods=["POST"]),
                 Route(
+                    "/permissions/me",
+                    endpoint=onRetrievingMyPermission,
+                    methods=["GET"],
+                ),
+                Route(
+                    "/permissions/{permissionId}",
+                    endpoint=onRetrievingPermission,
+                    methods=["GET"],
+                ),
+                Route(
                     "/permissions/{permissionId}",
                     endpoint=onReviewingTenantJoining,
                     methods=["PUT"],
                 ),
+                Route("/users", endpoint=onCountingUsers, methods=["HEAD"]),
+                Route("/users", endpoint=onListingUsers, methods=["GET"]),
                 Route("/snapshots", endpoint=onCountingSnapshots, methods=["HEAD"]),
                 Route("/snapshots", endpoint=onListingSnapshots, methods=["GET"]),
                 Route("/snapshots", endpoint=onUploadingSnapshot, methods=["POST"]),

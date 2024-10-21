@@ -4,7 +4,7 @@ from starlette.middleware.base import BaseHTTPMiddleware
 from typing import Callable, Coroutine
 from src.utils.session import withCredentials
 from firebase_admin.firestore_async import client
-from src.modules.IdentityAndAccessManaging.application.quries.ResolvePermission import ResolvePermission
+from src.modules.IdentityAndAccessManaging.application.mutations.ResolvePermission import ResolvePermission
 from src.utils.session import SessionKeys
 
 

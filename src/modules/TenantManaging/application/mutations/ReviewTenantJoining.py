@@ -5,7 +5,6 @@ from src.adapters.firestore.PermissionRepository import PermissionRepository
 from src.modules.IdentityAndAccessManaging.dtos.Permission import Permission
 from src.modules.TenantManaging.dtos.ReviewingTenantJoining import ReviewingTenantJoining
 from src.modules.IdentityAndAccessManaging.errors.PermissionDenied import PermissionDenied
-from src.modules.IdentityAndAccessManaging.dtos.PermissionStatuses import PermissionStatuses
 from src.modules.IdentityAndAccessManaging.dtos.Roles import Roles
 
 
@@ -32,8 +31,6 @@ class ReviewTenantJoining:
             updatedAt=None,
         )
         if permission.tenantId != tenantId:
-            raise PermissionDenied()
-        if permission.status != PermissionStatuses.Pending:
             raise PermissionDenied()
         if permission.role != Roles.Member:
             raise PermissionDenied()

@@ -1,23 +1,23 @@
 from dataclasses import dataclass
 from marshmallow import Schema
-from marshmallow.fields import String
+from marshmallow.fields import Integer
+from marshmallow.validate import Range
 from starlette.requests import Request
 
 
 def createSchema():
     QuerySchema = Schema.from_dict({
-        "userId": String(),
+        "page": Integer(validate=Range(min=1), missing=1),
     })
     schema: Schema = QuerySchema()
     return schema
 
 
 @dataclass
-class JoiningTenant:
-    userId: str
+class ListingUsers:
+    page: int
 
     @staticmethod
     async def fromRequest(request: Request):
         schema = createSchema()
-        json = await request.json()
-        return JoiningTenant(**schema.load(dict(**json)))
+        return ListingUsers(**schema.load(dict(**request.query_params)))
