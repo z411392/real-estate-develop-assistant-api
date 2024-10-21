@@ -64,9 +64,6 @@ from src.modules.SnapshotManaging.presentation.controllers.onCountingRegistries 
 from src.modules.SnapshotManaging.presentation.controllers.onListingRegistries import (
     onListingRegistries,
 )
-from src.modules.SnapshotManaging.presentation.controllers.onRetrievingSnapshot import (
-    onRetrievingSnapshot,
-)
 from src.modules.SnapshotManaging.presentation.controllers.onRetrievingRegistry import (
     onRetrievingRegistry,
 )
@@ -163,7 +160,6 @@ def createApp():
                         ),
                     ],
                     routes=[
-                        Route("/", endpoint=onRetrievingSnapshot, methods=["GET"]),
                         Route(
                             "/registries",
                             endpoint=onCountingRegistries,
