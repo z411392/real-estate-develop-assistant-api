@@ -10,10 +10,12 @@ from src.modules.SnapshotManaging.errors.SnapshotNotFound import SnapshotNotFoun
 from src.modules.SnapshotManaging.dtos.SnapshotTypes import SnapshotTypes
 from src.adapters.http.OpenAIService import OpenAIService
 from os import getenv
-from firebase_admin import db
 from src.modules.SnapshotManaging.dtos.BuildingRegistry import BuildingRegistry
-from typing import Optional
 from src.adapters.db.RealtimeDatabaseDao import RealtimeDatabaseDao
+from src.modules.SnapshotManaging.dtos.LandRegistry import LandRegistry
+from src.adapters.firestore.TenantRepository import TenantRepository
+from src.modules.TenantManaging.dtos.Tenant import Tenant
+from src.modules.SnapshotManaging.errors.OutOfCredits import OutOfCredits
 
 
 class ParseRegistry:
@@ -22,6 +24,7 @@ class ParseRegistry:
     _snapshotDao: SnapshotDao
     _openAIService: OpenAIService
     _realtimeDatabaseDao: RealtimeDatabaseDao
+    _tenantRepository: TenantRepository
 
     def __init__(self, db: AsyncClient, transaction: AsyncTransaction):
         self._logger = createLogger(__name__)
@@ -29,33 +32,50 @@ class ParseRegistry:
         self._snapshotDao = SnapshotDao(db=db)
         self._openAIService = OpenAIService(apiKey=getenv("OPENAI_API_KEY"))
         self._realtimeDatabaseDao = RealtimeDatabaseDao()
-
-    async def _touchBuildingRegistry(self, metadata: BuildingRegistry):
-        ref = db.reference(f"建物/{metadata.謄本核發機關}/{metadata.行政區}/{metadata.地段}/{metadata.小段}/{metadata.建號}")
-        record: Optional[dict] = ref.get()
-        renewing = True
-        if record is not None:
-            updatedAt, registryId = next(iter(record.items()))
-            renewing = int(updatedAt) < metadata.列印時間
-        if renewing:
-            ref.set({metadata.列印時間: registryId})
+        self._tenantRepository = TenantRepository(db=db, transaction=transaction)
 
     async def _parseBuildingRegistry(self, registryId: str, registry: Registry):
         if registry.metadata is not None:
             registry.metadata = BuildingRegistry(**registry.metadata)
-        if registry.status == RegistryStatuses.Pending or registry.status == RegistryStatuses.Failed:
+        if (
+            registry.status == RegistryStatuses.Pending or registry.status == RegistryStatuses.Failed
+        ):
             registry.status = RegistryStatuses.Doing
             registry.metadata = None
             await self._registryRepository.set(registryId, registry)
             try:
                 registry.status = RegistryStatuses.Done
-                registry.metadata = await self._openAIService.parseBuildingRegistry(registry.text)
+                registry.metadata = await self._openAIService.parseBuildingRegistry(
+                    registry.text
+                )
             except Exception:
                 registry.status = RegistryStatuses.Failed
             await self._registryRepository.set(registryId, registry)
         if registry.metadata is not None:
             metadata: BuildingRegistry = registry.metadata
             await self._realtimeDatabaseDao.touchBuildingRegistry(registryId, metadata)
+        return registry
+
+    async def _parseLandRegistry(self, registryId: str, registry: Registry):
+        if registry.metadata is not None:
+            registry.metadata = LandRegistry(**registry.metadata)
+        if (
+            registry.status == RegistryStatuses.Pending or registry.status == RegistryStatuses.Failed
+        ):
+            registry.status = RegistryStatuses.Doing
+            registry.metadata = None
+            await self._registryRepository.set(registryId, registry)
+            try:
+                registry.status = RegistryStatuses.Done
+                registry.metadata = await self._openAIService.parseLandRegistry(
+                    registry.text
+                )
+            except Exception:
+                registry.status = RegistryStatuses.Failed
+            await self._registryRepository.set(registryId, registry)
+        if registry.metadata is not None:
+            metadata: LandRegistry = registry.metadata
+            await self._realtimeDatabaseDao.touchLandRegistry(registryId, metadata)
         return registry
 
     async def __call__(
@@ -71,7 +91,27 @@ class ParseRegistry:
         registrySnapshot = await self._registryRepository.get(registryId)
         if not registrySnapshot.exists:
             raise RegistryNotFound()
-        registry = Registry(**registrySnapshot.to_dict(), id=registrySnapshot.id, createdAt=None, updatedAt=None)
-        if snapshot.type == SnapshotTypes.Buildings:
+
+        registry = Registry(
+            **registrySnapshot.to_dict(),
+            id=registrySnapshot.id,
+            createdAt=None,
+            updatedAt=None
+        )
+        tenantSnapshot = await self._tenantRepository.get(tenantId)
+        tenant = Tenant(
+            **tenantSnapshot.to_dict(), id=tenantId, createdAt=None, updatedAt=None
+        )
+        change = 0
+        if tenant.credits <= 0:
+            raise OutOfCredits()
+        if snapshot.type == SnapshotTypes.Building:
             registry = await self._parseBuildingRegistry(registryId, registry)
+            change -= 1
+        if snapshot.type == SnapshotTypes.Land:
+            registry = await self._parseLandRegistry(registryId, registry)
+            change -= 1
+        if change != 0:
+            tenant.credits += change
+            await self._tenantRepository.set(tenantId, tenant)
         return registry

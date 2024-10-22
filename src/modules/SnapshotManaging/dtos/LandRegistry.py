@@ -3,35 +3,35 @@ from dataclasses import dataclass, field
 
 
 @dataclass
-class 共同擔保建物:
+class 共同擔保建號:
     地段: str
     小段: str
     建號: str
 
     @staticmethod
-    def from_dict(obj: dict) -> "共同擔保建物":
+    def from_dict(obj: dict) -> "共同擔保建號":
         _地段 = str(obj.get("地段"))
         _小段 = str(obj.get("小段"))
         _建號 = str(obj.get("建號"))
-        return 共同擔保建物(_地段, _小段, _建號)
+        return 共同擔保建號(_地段, _小段, _建號)
 
 
 @dataclass
-class 共同擔保土地:
+class 共同擔保地號:
     地段: str
     小段: str
     地號: str
 
     @staticmethod
-    def from_dict(obj: dict) -> "共同擔保土地":
+    def from_dict(obj: dict) -> "共同擔保地號":
         _地段 = str(obj.get("地段"))
         _小段 = str(obj.get("小段"))
         _地號 = str(obj.get("地號"))
-        return 共同擔保土地(_地段, _小段, _地號)
+        return 共同擔保地號(_地段, _小段, _地號)
 
 
 @dataclass
-class 建物他項權利部:
+class 土地他項權利部:
     登記次序: str
     權利種類: str
     收件日期: str
@@ -55,12 +55,12 @@ class 建物他項權利部:
     標的登記次序: List[str]
     設定權利範圍: str
     證明書字號: str
-    共同擔保土地: List[共同擔保土地]
-    共同擔保建物: List[共同擔保建物]
+    共同擔保地號: List[共同擔保地號]
+    共同擔保建號: List[共同擔保建號]
     其他登記事項: str
 
     @staticmethod
-    def from_dict(obj: dict) -> "建物他項權利部":
+    def from_dict(obj: dict) -> "土地他項權利部":
         _登記次序 = str(obj.get("登記次序"))
         _權利種類 = str(obj.get("權利種類"))
         _收件日期 = str(obj.get("收件日期"))
@@ -84,16 +84,16 @@ class 建物他項權利部:
         _標的登記次序 = [標的登記次序 for 標的登記次序 in obj.get("標的登記次序")]
         _設定權利範圍 = str(obj.get("設定權利範圍"))
         _證明書字號 = str(obj.get("證明書字號"))
-        _共同擔保土地 = [
-            共同擔保土地.from_dict(每一共同擔保土地)
-            for 每一共同擔保土地 in obj.get("共同擔保土地")
+        _共同擔保地號 = [
+            共同擔保地號.from_dict(每一共同擔保地號)
+            for 每一共同擔保地號 in obj.get("共同擔保地號")
         ]
-        _共同擔保建物 = [
-            共同擔保建物.from_dict(每一共同擔保建物)
-            for 每一共同擔保建物 in obj.get("共同擔保建物")
+        _共同擔保建號 = [
+            共同擔保建號.from_dict(每一共同擔保建號)
+            for 每一共同擔保建號 in obj.get("共同擔保建號")
         ]
         _其他登記事項 = str(obj.get("其他登記事項"))
-        return 建物他項權利部(
+        return 土地他項權利部(
             _登記次序,
             _權利種類,
             _收件日期,
@@ -117,14 +117,14 @@ class 建物他項權利部:
             _標的登記次序,
             _設定權利範圍,
             _證明書字號,
-            _共同擔保土地,
-            _共同擔保建物,
+            _共同擔保地號,
+            _共同擔保建號,
             _其他登記事項,
         )
 
 
 @dataclass
-class 建物所有權部:
+class 土地所有權部:
     登記次序: str
     登記日期: str
     登記原因: str
@@ -134,11 +134,16 @@ class 建物所有權部:
     住址: str
     權利範圍: str
     權狀字號: str
-    建物他項權利登記次序: List[str]
+    當期申報地價年月: str
+    當期申報地價: int
+    前次移轉現值或原規定地價年月: str
+    前次移轉現值或原規定地價: int
+    歷次取得權利範圍: str
+    相關他項權利登記次序: List[str]
     其他登記事項: str
 
     @staticmethod
-    def from_dict(obj: dict) -> "建物所有權部":
+    def from_dict(obj: dict) -> "土地所有權部":
         _登記次序 = str(obj.get("登記次序"))
         _登記日期 = str(obj.get("登記日期"))
         _登記原因 = str(obj.get("登記原因"))
@@ -148,12 +153,17 @@ class 建物所有權部:
         _住址 = str(obj.get("住址"))
         _權利範圍 = str(obj.get("權利範圍"))
         _權狀字號 = str(obj.get("權狀字號"))
-        _建物他項權利登記次序 = [
-            建物他項權利登記次序
-            for 建物他項權利登記次序 in obj.get("建物他項權利登記次序")
+        _當期申報地價年月 = str(obj.get("當期申報地價年月"))
+        _當期申報地價 = int(obj.get("當期申報地價"))
+        _前次移轉現值或原規定地價年月 = str(obj.get("前次移轉現值或原規定地價年月"))
+        _前次移轉現值或原規定地價 = int(obj.get("前次移轉現值或原規定地價"))
+        _歷次取得權利範圍 = str(obj.get("歷次取得權利範圍"))
+        _相關他項權利登記次序 = [
+            相關他項權利登記次序
+            for 相關他項權利登記次序 in obj.get("相關他項權利登記次序")
         ]
         _其他登記事項 = str(obj.get("其他登記事項"))
-        return 建物所有權部(
+        return 土地所有權部(
             _登記次序,
             _登記日期,
             _登記原因,
@@ -163,146 +173,71 @@ class 建物所有權部:
             _住址,
             _權利範圍,
             _權狀字號,
-            _建物他項權利登記次序,
+            _當期申報地價年月,
+            _當期申報地價,
+            _前次移轉現值或原規定地價年月,
+            _前次移轉現值或原規定地價,
+            _歷次取得權利範圍,
+            _相關他項權利登記次序,
             _其他登記事項,
         )
 
 
 @dataclass
-class 主建物資料:
+class 地上建物建號:
     地段: str
     小段: str
     建號: str
-    權利範圍: str
 
     @staticmethod
-    def from_dict(obj: dict) -> "主建物資料":
-        _地段 = str(obj.get("地段"))
-        _小段 = str(obj.get("小段"))
-        _建號 = str(obj.get("建號"))
-        _權利範圍 = str(obj.get("權利範圍"))
-        return 主建物資料(_地段, _小段, _建號, _權利範圍)
-
-
-@dataclass
-class 共有部分:
-    地段: str
-    小段: str
-    建號: str
-    面積: str
-    權利範圍: str
-    其他登記事項: str
-
-    @staticmethod
-    def from_dict(obj: dict) -> "共有部分":
-        _地段 = str(obj.get("地段"))
-        _小段 = str(obj.get("小段"))
-        _建號 = str(obj.get("建號"))
-        _面積 = str(obj.get("面積"))
-        _權利範圍 = str(obj.get("權利範圍"))
-        _其他登記事項 = str(obj.get("其他登記事項"))
-        return 共有部分(_地段, _小段, _建號, _面積, _權利範圍, _其他登記事項)
-
-
-@dataclass
-class 附屬建物:
-    附屬建物類型: str
-    面積: str
-
-    @staticmethod
-    def from_dict(obj: dict) -> "附屬建物":
-        _附屬建物類型 = str(obj.get("附屬建物類型"))
-        _面積 = str(obj.get("面積"))
-        return 附屬建物(_附屬建物類型, _面積)
-
-
-@dataclass
-class 層次:
-    層次: int
-    層次面積: str
-    總面積: str
-
-    @staticmethod
-    def from_dict(obj: dict) -> "層次":
-        _層次 = str(obj.get("層次"))
-        _層次面積 = str(obj.get("層次面積"))
-        _總面積 = str(obj.get("總面積"))
-        return 層次(_層次, _層次面積, _總面積)
-
-
-@dataclass
-class 建物坐落:
-    地段: str
-    小段: str
-    地號: str
-
-    @staticmethod
-    def from_dict(obj: dict) -> "建物坐落":
+    def from_dict(obj: dict) -> "地上建物建號":
         _地段 = str(obj.get("地段"))
         _小段 = str(obj.get("小段"))
         _地號 = str(obj.get("地號"))
-        return 建物坐落(_地段, _小段, _地號)
+        return 地上建物建號(_地段, _小段, _地號)
 
 
 @dataclass
-class 建物標示部:
+class 土地標示部:
     登記日期: str
     登記原因: str
-    建物坐落: List[建物坐落]
-    建物門牌: str
-    主要用途: str
-    主要建材: str
-    層數: str
-    層次: List[層次]
-    附屬建物: List[附屬建物]
-    建築完成日期: str
-    共有部分: List[共有部分]
-    主建物資料: List[主建物資料]
+    面積: int
+    使用分區: str
+    使用地類別: str
+    公告土地現值年月: str
+    公告土地現值: int
+    地上建物建號: List[地上建物建號]
     其他登記事項: str
 
     @staticmethod
-    def from_dict(obj: dict) -> "建物標示部":
+    def from_dict(obj: dict) -> "土地標示部":
         _登記日期 = str(obj.get("登記日期"))
         _登記原因 = str(obj.get("登記原因"))
-        _建物坐落 = [
-            建物坐落.from_dict(單一建物坐落) for 單一建物坐落 in obj.get("建物坐落")
-        ]
-        _建物門牌 = str(obj.get("建物門牌"))
-        _主要用途 = str(obj.get("主要用途"))
-        _主要建材 = str(obj.get("主要建材"))
-        _層數 = str(obj.get("層數"))
-        _層次 = [層次.from_dict(單一層次) for 單一層次 in obj.get("層次")]
-        _附屬建物 = [
-            附屬建物.from_dict(單一附屬建物) for 單一附屬建物 in obj.get("附屬建物")
-        ]
-        _建築完成日期 = str(obj.get("建築完成日期"))
-        _共有部分 = [
-            共有部分.from_dict(單一共有部分) for 單一共有部分 in obj.get("共有部分")
-        ]
-        _主建物資料 = [
-            主建物資料.from_dict(單一主建物資料)
-            for 單一主建物資料 in obj.get("主建物資料")
+        _面積 = int(obj.get("面積"))
+        _使用分區 = str(obj.get("使用分區"))
+        _使用地類別 = str(obj.get("使用地類別"))
+        _公告土地現值年月 = str(obj.get("公告土地現值年月"))
+        _公告土地現值 = int(obj.get("公告土地現值"))
+        _地上建物建號 = [
+            地上建物建號.from_dict(單一地上建物建號)
+            for 單一地上建物建號 in obj.get("地上建物建號")
         ]
         _其他登記事項 = str(obj.get("其他登記事項"))
-        return 建物標示部(
+        return 土地標示部(
             _登記日期,
             _登記原因,
-            _建物坐落,
-            _建物門牌,
-            _主要用途,
-            _主要建材,
-            _層數,
-            _層次,
-            _附屬建物,
-            _建築完成日期,
-            _共有部分,
-            _主建物資料,
+            _面積,
+            _使用分區,
+            _使用地類別,
+            _公告土地現值年月,
+            _公告土地現值,
+            _地上建物建號,
             _其他登記事項,
         )
 
 
 @dataclass
-class BuildingRegistry:
+class LandRegistry:
     列印時間: int
     列印公司: str
     謄本種類碼: str
@@ -312,13 +247,13 @@ class BuildingRegistry:
     行政區: str
     地段: str
     小段: str
-    建號: str
-    建物標示部: 建物標示部
-    建物所有權部: List["建物所有權部"] = field(default_factory=list)
-    建物他項權利部: List["建物他項權利部"] = field(default_factory=list)
+    地號: str
+    土地標示部: List[土地標示部]
+    土地所有權部: List["土地所有權部"] = field(default_factory=list)
+    土地他項權利部: List["土地他項權利部"] = field(default_factory=list)
 
     @staticmethod
-    def from_dict(obj: dict) -> "BuildingRegistry":
+    def from_dict(obj: dict) -> "LandRegistry":
         _列印時間 = int(obj.get("列印時間"))
         _列印公司 = str(obj.get("列印公司"))
         _謄本種類碼 = str(obj.get("謄本種類碼"))
@@ -328,17 +263,19 @@ class BuildingRegistry:
         _行政區 = str(obj.get("行政區"))
         _地段 = str(obj.get("地段"))
         _小段 = str(obj.get("小段"))
-        _建號 = str(obj.get("建號"))
-        _建物標示部 = 建物標示部.from_dict(obj.get("建物標示部"))
-        _建物所有權部 = [
-            建物所有權部.from_dict(每ㄧ建物所有權)
-            for 每ㄧ建物所有權 in obj.get("建物所有權部")
+        _地號 = str(obj.get("地號"))
+        _土地標示部 = [
+            土地標示部.from_dict(每ㄧ土地標示) for 每ㄧ土地標示 in obj.get("土地標示部")
         ]
-        _建物他項權利部 = [
-            建物他項權利部.from_dict(每ㄧ建物他項權利)
-            for 每ㄧ建物他項權利 in obj.get("建物他項權利部")
+        _土地所有權部 = [
+            土地所有權部.from_dict(每ㄧ土地所有權)
+            for 每ㄧ土地所有權 in obj.get("土地所有權部")
         ]
-        return BuildingRegistry(
+        _土地他項權利部 = [
+            土地他項權利部.from_dict(每ㄧ土地他項權利)
+            for 每ㄧ土地他項權利 in obj.get("土地他項權利部")
+        ]
+        return LandRegistry(
             _列印時間,
             _列印公司,
             _謄本種類碼,
@@ -348,8 +285,8 @@ class BuildingRegistry:
             _行政區,
             _地段,
             _小段,
-            _建號,
-            _建物標示部,
-            _建物所有權部,
-            _建物他項權利部,
+            _地號,
+            _土地標示部,
+            _土地所有權部,
+            _土地他項權利部,
         )

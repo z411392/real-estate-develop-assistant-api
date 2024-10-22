@@ -37,7 +37,7 @@ class CreateTenant:
             raise TenantNameConflict()
         if await self._permissionDao.isWaitingForTenantCreation(userId):
             raise TenantCreatingInProgress()
-        tenant = Tenant(name=mutation.name, id=tenantId, createdAt=None, updatedAt=None)
+        tenant = Tenant(name=mutation.name, id=tenantId, credits=50, createdAt=None, updatedAt=None)
         permissionId = PermissionRepository.nextId(
             tenantId=tenantId, userId=userId)
         permission = Permission(

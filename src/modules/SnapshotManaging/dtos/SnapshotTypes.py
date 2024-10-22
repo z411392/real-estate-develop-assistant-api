@@ -2,8 +2,8 @@ from enum import Enum
 
 
 class SnapshotTypes(str, Enum):
-    Buildings = "building"
-    Lands = "lands"
+    Building = "building"
+    Land = "land"
 
     def __str__(self):
         return self.value

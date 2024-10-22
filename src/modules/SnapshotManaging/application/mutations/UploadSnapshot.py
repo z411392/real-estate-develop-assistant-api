@@ -18,7 +18,10 @@ from src.constants import Collections
 from src.adapters.firestore.RegistryRepository import RegistryRepository
 from src.modules.SnapshotManaging.dtos.Registry import Registry
 from src.modules.SnapshotManaging.dtos.RegistryStatuses import RegistryStatuses
-from typing import List
+from typing import List, Optional
+from src.modules.SnapshotManaging.dtos.UploadingSnapshot import UploadingSnapshot
+from src.modules.SnapshotManaging.errors.MustBeInPDFFormat import MustBeInPDFFormat
+from base64 import b64decode
 
 
 class UploadSnapshot:
@@ -95,47 +98,52 @@ class UploadSnapshot:
         await putObject(buffer, dict(text=text))
         return text
 
-    async def _createRegistry(self, filePath: str, text: str, userId: str):
+    async def _createRegistry(self, name: str, filePath: str, text: str, userId: str):
+        snapshotType: Optional[SnapshotTypes] = None
         if search(r"建物登記第(?:一|二|三)類謄本", text, IGNORECASE):
-            texts = split(".*本謄本列印完畢.*", text)
-            texts = [texts[-1] + texts[0], *texts[1:-1]]
-            snapshotId = self._snapshotRepository.nextId(
-                snapshotType=SnapshotTypes.Buildings, filePath=filePath
-            )
-            snapshot = Snapshot(
-                type=SnapshotTypes.Buildings,
-                filePath=filePath,
-                userId=userId,
-                id=snapshotId,
+            snapshotType = SnapshotTypes.Building
+        if search(r"土地登記第(?:一|二|三)類謄本", text, IGNORECASE):
+            snapshotType = SnapshotTypes.Land
+        if snapshotType is None:
+            return None
+        texts = split(".*本謄本列印完畢.*", text)
+        texts = [texts[-1] + texts[0], *texts[1:-1]]
+        snapshotId = self._snapshotRepository.nextId(
+            snapshotType=snapshotType, filePath=filePath
+        )
+        snapshot = Snapshot(
+            name=name,
+            type=snapshotType,
+            filePath=filePath,
+            userId=userId,
+            id=snapshotId,
+            createdAt=None,
+            updatedAt=None,
+        )
+        registries: List[Registry] = []
+        for index, text in enumerate(texts):
+            registryId = RegistryRepository.nextId(snapshotId=snapshotId, index=index)
+            registry = Registry(
+                snapshotId=snapshotId,
+                index=index,
+                type=snapshotType,
+                status=RegistryStatuses.Pending,
+                text=text,
+                metadata=None,
+                id=registryId,
                 createdAt=None,
                 updatedAt=None,
             )
-            registries: List[Registry] = []
-            for index, text in enumerate(texts):
-                registryId = RegistryRepository.nextId(
-                    snapshotId=snapshotId, index=index
-                )
-                registry = Registry(
-                    snapshotId=snapshotId,
-                    index=index,
-                    type=SnapshotTypes.Buildings,
-                    status=RegistryStatuses.Pending,
-                    text=text,
-                    metadata=None,
-                    id=registryId,
-                    createdAt=None,
-                    updatedAt=None,
-                )
-                registries.append(registry)
-            return snapshot, registries
-        return None
+            registries.append(registry)
+        return snapshot, registries
 
-    async def __call__(self, userId: str, tenantId: str, filePath: str, buffer: bytes):
-        """
-        @todo 之後要多檢查／扣除 tenant 的 credits。
-        """
+    async def __call__(self, userId: str, tenantId: str, mutation: UploadingSnapshot):
+        buffer = b64decode(mutation.content)
+        filePath = filePathFor(buffer)
+        if not filePath.startswith("pdf"):
+            raise MustBeInPDFFormat()
         text = await self._scanPDF(filePath, buffer)
-        pair = await self._createRegistry(filePath, text, userId)
+        pair = await self._createRegistry(mutation.name, filePath, text, userId)
         if pair is None:
             return None
         snapshot, registries = pair

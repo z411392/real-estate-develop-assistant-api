@@ -98,6 +98,7 @@ from src.modules.TenantManaging.errors.TenantCreatingInProgress import (
 from src.modules.TenantManaging.errors.TenantNameConflict import TenantNameConflict
 from src.modules.TenantManaging.errors.TenantNotFound import TenantNotFound
 from src.modules.SnapshotManaging.errors.MustBeInPDFFormat import MustBeInPDFFormat
+from src.modules.SnapshotManaging.errors.OutOfCredits import OutOfCredits
 
 
 async def handleException(request: Request, exception: Exception):
@@ -116,6 +117,8 @@ async def handleException(request: Request, exception: Exception):
     if isinstance(exception, UserUnauthenticated):
         return JSONResponse(dict(message=str(exception)), status_code=403)
     if isinstance(exception, PermissionDenied):
+        return JSONResponse(dict(message=str(exception)), status_code=403)
+    if isinstance(exception, OutOfCredits):
         return JSONResponse(dict(message=str(exception)), status_code=403)
     if isinstance(exception, TenantNotFound):
         return JSONResponse(dict(message=str(exception)), status_code=404)

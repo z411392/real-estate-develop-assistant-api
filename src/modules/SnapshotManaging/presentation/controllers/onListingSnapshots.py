@@ -27,16 +27,7 @@ async def onListingSnapshots(request: Request):
     async for snapshot in listSnapshots(credentials.uid, tenant.id, query):
         downloadURL = await getObjectURL(snapshot.filePath)
         usersMap[snapshot.userId] = None
-        snapshots.append(
-            dict(
-                id=snapshot.id,
-                type=snapshot.type,
-                userId=snapshot.userId,
-                downloadURL=downloadURL,
-                createdAt=snapshot.createdAt,
-                updatedAt=snapshot.updatedAt,
-            )
-        )
+        snapshots.append(dict(**asdict(snapshot), downloadURL=downloadURL))
     userDao = UserDao()
     async for user in userDao.inIds(*usersMap.keys()):
         usersMap[user.id] = asdict(user)
