@@ -3,7 +3,6 @@ from google.cloud.firestore_v1.field_path import FieldPath
 from src.constants import Collections
 from src.modules.SnapshotManaging.dtos.Snapshot import Snapshot
 from typing import List, Mapping, Optional
-from datetime import datetime
 
 
 class SnapshotDao:
@@ -25,13 +24,9 @@ class SnapshotDao:
             .stream()
         ids: List[str] = []
         mapping: Mapping[str, Snapshot] = {}
-        async for document in stream:
-            ids.append(document.id)
-            createTime: datetime = document.create_time
-            createdAt = int(createTime.timestamp() * 1000)
-            updateTime: datetime = document.update_time
-            updatedAt = int(updateTime.timestamp() * 1000)
-            mapping[document.id] = Snapshot(**document.to_dict(), id=document.id, createdAt=createdAt, updatedAt=updatedAt)
+        async for documentSnapshot in stream:
+            ids.append(documentSnapshot.id)
+            mapping[documentSnapshot.id] = Snapshot.fromDocumentSnapshot(documentSnapshot)
         for snapshotId in snapshotIds:
             snapshot: Optional[Snapshot] = mapping.get(snapshotId)
             if snapshot is None:

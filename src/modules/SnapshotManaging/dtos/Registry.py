@@ -1,7 +1,9 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Any, Optional
 from src.modules.SnapshotManaging.dtos.RegistryStatuses import RegistryStatuses
 from src.modules.SnapshotManaging.dtos.SnapshotTypes import SnapshotTypes
+from google.cloud.firestore import DocumentSnapshot
+from datetime import datetime
 
 
 @dataclass
@@ -13,28 +15,32 @@ class Registry:
     status: RegistryStatuses
     text: str
     metadata: Any
-    createdAt: Optional[int]
-    updatedAt: Optional[int]
+    createdAt: Optional[int] = field(default_factory=lambda: None)
+    updatedAt: Optional[int] = field(default_factory=lambda: None)
 
     @staticmethod
-    def from_dict(obj: dict) -> "Registry":
-        _id = str(obj.get("id"))
-        _snapshotId = str(obj.get("snapshotId"))
-        _type = str(obj.get("type"))
-        _index = int(obj.get("index"))
-        _status = str(obj.get("status"))
-        _text = str(obj.get("text"))
-        _metadata = obj.get("metadata")
-        _createdAt = int(obj.get("createdAt")) if obj.get("createdAt") else None
-        _updatedAt = int(obj.get("updatedAt")) if obj.get("updatedAt") else None
+    def from_dict(obj: dict):
         return Registry(
-            _id,
-            _snapshotId,
-            _type,
-            _index,
-            _status,
-            _text,
-            _metadata,
-            _createdAt,
-            _updatedAt,
+            id=str(obj.get("id")),
+            snapshotId=str(obj.get("snapshotId")),
+            type=str(obj.get("type")),
+            index=int(obj.get("index")),
+            status=str(obj.get("status")),
+            text=str(obj.get("text")),
+            metadata=obj.get("metadata"),
+            createdAt=int(obj.get("createdAt")) if obj.get("createdAt") else None,
+            updatedAt=int(obj.get("updatedAt")) if obj.get("updatedAt") else None,
+        )
+
+    @staticmethod
+    def fromDocumentSnapshot(documentSnapshot: DocumentSnapshot):
+        createTime: datetime = documentSnapshot.create_time
+        createdAt = int(createTime.timestamp() * 1000)
+        updateTime: datetime = documentSnapshot.update_time
+        updatedAt = int(updateTime.timestamp() * 1000)
+        return Registry(
+            **documentSnapshot.to_dict(),
+            id=documentSnapshot.id,
+            createdAt=createdAt,
+            updatedAt=updatedAt
         )

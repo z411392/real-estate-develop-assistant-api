@@ -18,10 +18,11 @@ from src.constants import Collections
 from src.adapters.firestore.RegistryRepository import RegistryRepository
 from src.modules.SnapshotManaging.dtos.Registry import Registry
 from src.modules.SnapshotManaging.dtos.RegistryStatuses import RegistryStatuses
-from typing import List, Optional
+from typing import List, Optional, Coroutine
 from src.modules.SnapshotManaging.dtos.UploadingSnapshot import UploadingSnapshot
 from src.modules.SnapshotManaging.errors.MustBeInPDFFormat import MustBeInPDFFormat
 from base64 import b64decode
+from asyncio import gather
 
 
 class UploadSnapshot:
@@ -108,7 +109,7 @@ class UploadSnapshot:
             return None
         texts = split(".*本謄本列印完畢.*", text)
         texts = [texts[-1] + texts[0], *texts[1:-1]]
-        snapshotId = self._snapshotRepository.nextId(
+        snapshotId = SnapshotRepository.nextId(
             snapshotType=snapshotType, filePath=filePath
         )
         snapshot = Snapshot(
@@ -117,8 +118,6 @@ class UploadSnapshot:
             filePath=filePath,
             userId=userId,
             id=snapshotId,
-            createdAt=None,
-            updatedAt=None,
         )
         registries: List[Registry] = []
         for index, text in enumerate(texts):
@@ -131,8 +130,6 @@ class UploadSnapshot:
                 text=text,
                 metadata=None,
                 id=registryId,
-                createdAt=None,
-                updatedAt=None,
             )
             registries.append(registry)
         return snapshot, registries
@@ -147,26 +144,26 @@ class UploadSnapshot:
         if pair is None:
             return None
         snapshot, registries = pair
-        snapshotSnapshot = await self._snapshotRepository.get(snapshot.id)
-        if not snapshotSnapshot.exists:
-            await self._snapshotRepository.set(snapshot.id, snapshot)
+        snapshotExists = await self._snapshotRepository.get(snapshot.id)
+        operations: List[Coroutine] = []
+        if not snapshotExists:
+            operations.append(self._snapshotRepository.set(snapshot.id, snapshot))
         ownershipId = OwnershipRepository.nextId(
             ownerId=tenantId, resourceId=snapshot.id
         )
-        ownershipSnapshot = await self._ownershipRepository.get(ownershipId)
-        if not ownershipSnapshot.exists:
+        ownershipExists = await self._ownershipRepository.get(ownershipId)
+        if not ownershipExists:
             ownership = Ownership(
                 ownerId=tenantId,
                 ownerType=OwnerTypes.Tenant,
                 resourceId=snapshot.id,
                 resourceType=str(Collections.Snapshots),
                 id=ownershipId,
-                createdAt=None,
-                updatedAt=None,
             )
-            await self._ownershipRepository.set(ownershipId, ownership)
+            operations.append(self._ownershipRepository.set(ownershipId, ownership))
         for registry in registries:
-            registrySnapshot = await self._registryRepository.get(registry.id)
-            if not registrySnapshot.exists:
-                await self._registryRepository.set(registry.id, registry)
+            registryExists = await self._registryRepository.get(registry.id)
+            if not registryExists:
+                operations.append(self._registryRepository.set(registry.id, registry))
+        await gather(*operations)
         return snapshot.id

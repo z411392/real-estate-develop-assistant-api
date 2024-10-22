@@ -1,7 +1,7 @@
 from firebase_admin.auth import get_users, UidIdentifier, GetUsersResult, UserRecord
 from typing import List, Optional
 from src.modules.IdentityAndAccessManaging.dtos.User import User
-from src.utils.threads import threadPoolSubmitter
+from src.utils.threads import ThreadPoolExecutor
 
 
 class UserDao:
@@ -14,9 +14,9 @@ class UserDao:
 
     async def inIds(self, *userIds: List[str]):
         batchSize = 100
-        async with threadPoolSubmitter() as submit:
+        async with ThreadPoolExecutor() as execute:
             for index in range(0, len(userIds), batchSize):
-                users: List[UserRecord] = await submit(
+                users: List[UserRecord] = await execute(
                     self._inIds, *userIds[index: index + batchSize]
                 )
                 for user in users:

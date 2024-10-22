@@ -1,17 +1,17 @@
-from typing import List
+from typing import List, Optional
 from dataclasses import dataclass, field
 
 
 @dataclass
 class 共同擔保建物:
     地段: str
-    小段: str
+    小段: Optional[str]
     建號: str
 
     @staticmethod
     def from_dict(obj: dict) -> "共同擔保建物":
         _地段 = str(obj.get("地段"))
-        _小段 = str(obj.get("小段"))
+        _小段 = str(obj.get("小段")) if obj.get("小段") else None
         _建號 = str(obj.get("建號"))
         return 共同擔保建物(_地段, _小段, _建號)
 
@@ -19,13 +19,13 @@ class 共同擔保建物:
 @dataclass
 class 共同擔保土地:
     地段: str
-    小段: str
+    小段: Optional[str]
     地號: str
 
     @staticmethod
     def from_dict(obj: dict) -> "共同擔保土地":
         _地段 = str(obj.get("地段"))
-        _小段 = str(obj.get("小段"))
+        _小段 = str(obj.get("小段")) if obj.get("小段") else None
         _地號 = str(obj.get("地號"))
         return 共同擔保土地(_地段, _小段, _地號)
 
@@ -171,14 +171,14 @@ class 建物所有權部:
 @dataclass
 class 主建物資料:
     地段: str
-    小段: str
+    小段: Optional[str]
     建號: str
     權利範圍: str
 
     @staticmethod
     def from_dict(obj: dict) -> "主建物資料":
         _地段 = str(obj.get("地段"))
-        _小段 = str(obj.get("小段"))
+        _小段 = str(obj.get("小段")) if obj.get("小段") else None
         _建號 = str(obj.get("建號"))
         _權利範圍 = str(obj.get("權利範圍"))
         return 主建物資料(_地段, _小段, _建號, _權利範圍)
@@ -187,7 +187,7 @@ class 主建物資料:
 @dataclass
 class 共有部分:
     地段: str
-    小段: str
+    小段: Optional[str]
     建號: str
     面積: str
     權利範圍: str
@@ -196,7 +196,7 @@ class 共有部分:
     @staticmethod
     def from_dict(obj: dict) -> "共有部分":
         _地段 = str(obj.get("地段"))
-        _小段 = str(obj.get("小段"))
+        _小段 = str(obj.get("小段")) if obj.get("小段") else None
         _建號 = str(obj.get("建號"))
         _面積 = str(obj.get("面積"))
         _權利範圍 = str(obj.get("權利範圍"))
@@ -233,13 +233,13 @@ class 層次:
 @dataclass
 class 建物坐落:
     地段: str
-    小段: str
+    小段: Optional[str]
     地號: str
 
     @staticmethod
     def from_dict(obj: dict) -> "建物坐落":
         _地段 = str(obj.get("地段"))
-        _小段 = str(obj.get("小段"))
+        _小段 = str(obj.get("小段")) if obj.get("小段") else None
         _地號 = str(obj.get("地號"))
         return 建物坐落(_地段, _小段, _地號)
 
@@ -311,7 +311,7 @@ class BuildingRegistry:
     資料管轄機關: str
     行政區: str
     地段: str
-    小段: str
+    小段: Optional[str]
     建號: str
     建物標示部: 建物標示部
     建物所有權部: List["建物所有權部"] = field(default_factory=list)
@@ -327,7 +327,7 @@ class BuildingRegistry:
         _資料管轄機關 = str(obj.get("資料管轄機關"))
         _行政區 = str(obj.get("行政區"))
         _地段 = str(obj.get("地段"))
-        _小段 = str(obj.get("小段"))
+        _小段 = str(obj.get("小段")) if obj.get("小段") else None
         _建號 = str(obj.get("建號"))
         _建物標示部 = 建物標示部.from_dict(obj.get("建物標示部"))
         _建物所有權部 = [

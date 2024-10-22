@@ -2,7 +2,7 @@ import hashlib
 from magic import from_buffer
 from mimetypes import guess_extension
 from firebase_admin import storage
-from src.utils.threads import threadPoolSubmitter
+from src.utils.threads import ThreadPoolExecutor
 from datetime import datetime
 
 
@@ -34,8 +34,8 @@ def _existObject(filePath: str):
 
 
 async def existObject(filePath: str):
-    async with threadPoolSubmitter() as submit:
-        return await submit(_existObject, filePath)
+    async with ThreadPoolExecutor() as execute:
+        return await execute(_existObject, filePath)
 
 
 def _putObject(buffer: bytes, metadata: dict = None):
@@ -51,8 +51,8 @@ def _putObject(buffer: bytes, metadata: dict = None):
 
 
 async def putObject(buffer: bytes, metadata: dict = None):
-    async with threadPoolSubmitter() as submit:
-        return await submit(_putObject, buffer, metadata)
+    async with ThreadPoolExecutor() as execute:
+        return await execute(_putObject, buffer, metadata)
 
 
 def _getObjectURL(filePath: str, expiry: int = 3600):
@@ -64,8 +64,8 @@ def _getObjectURL(filePath: str, expiry: int = 3600):
 
 
 async def getObjectURL(filePath: str, expiry: int = 3600):
-    async with threadPoolSubmitter() as submit:
-        return await submit(_getObjectURL, filePath, expiry)
+    async with ThreadPoolExecutor() as execute:
+        return await execute(_getObjectURL, filePath, expiry)
 
 
 def _deleteObjectURL(filePath: str):
@@ -75,8 +75,8 @@ def _deleteObjectURL(filePath: str):
 
 
 async def deleteObjectURL(filePath: str):
-    async with threadPoolSubmitter() as submit:
-        return await submit(_deleteObjectURL, filePath)
+    async with ThreadPoolExecutor() as execute:
+        return await execute(_deleteObjectURL, filePath)
 
 
 def _getObjectMetaData(filePath: str):
@@ -87,5 +87,5 @@ def _getObjectMetaData(filePath: str):
 
 
 async def getObjectMetaData(filePath: str):
-    async with threadPoolSubmitter() as submit:
-        return await submit(_getObjectMetaData, filePath)
+    async with ThreadPoolExecutor() as execute:
+        return await execute(_getObjectMetaData, filePath)

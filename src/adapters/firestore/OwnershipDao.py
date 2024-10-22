@@ -7,7 +7,6 @@ from src.modules.IdentityAndAccessManaging.dtos.OwnerTypes import OwnerTypes
 from src.constants import PageSizes
 from typing import List, Mapping, Optional
 from operator import itemgetter
-from datetime import datetime
 
 
 class OwnershipDao:
@@ -60,13 +59,9 @@ class OwnershipDao:
             .stream()
         ids: List[str] = []
         mapping: Mapping[str, Ownership] = {}
-        async for document in stream:
-            ids.append(document.id)
-            createTime: datetime = document.create_time
-            createdAt = int(createTime.timestamp() * 1000)
-            updateTime: datetime = document.update_time
-            updatedAt = int(updateTime.timestamp() * 1000)
-            mapping[document.id] = Ownership(**document.to_dict(), id=document.id, createdAt=createdAt, updatedAt=updatedAt)
+        async for documentSnapshot in stream:
+            ids.append(documentSnapshot.id)
+            mapping[documentSnapshot.id] = Ownership.fromDocumentSnapshot(documentSnapshot)
         for ownershipId in ownershipIds:
             ownership: Optional[Ownership] = mapping.get(ownershipId)
             if ownership is None:

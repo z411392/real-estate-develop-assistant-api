@@ -3,7 +3,6 @@ from google.cloud.firestore_v1.field_path import FieldPath
 from src.constants import Collections
 from typing import List, Mapping, Optional
 from src.modules.TenantManaging.dtos.Tenant import Tenant
-from datetime import datetime
 
 
 class TenantDao:
@@ -25,13 +24,9 @@ class TenantDao:
             .stream()
         ids: List[str] = []
         mapping: Mapping[str, Tenant] = {}
-        async for document in stream:
-            ids.append(document.id)
-            createTime: datetime = document.create_time
-            createdAt = int(createTime.timestamp() * 1000)
-            updateTime: datetime = document.update_time
-            updatedAt = int(updateTime.timestamp() * 1000)
-            mapping[document.id] = Tenant(**document.to_dict(), id=document.id, createdAt=createdAt, updatedAt=updatedAt)
+        async for documentSnapshot in stream:
+            ids.append(documentSnapshot.id)
+            mapping[documentSnapshot.id] = Tenant.fromDocumentSnapshot(documentSnapshot)
         for tenantId in tenantIds:
             tenant: Optional[Tenant] = mapping.get(tenantId)
             if tenant is None:

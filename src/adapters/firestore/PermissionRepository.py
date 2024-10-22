@@ -18,8 +18,8 @@ class PermissionRepository:
         return str(uuid5(UUID(tenantId), userId))
 
     async def get(self, permissionId: str):
-        documentSnapshots: DocumentSnapshot = await self._collection.document(permissionId).get()
-        return documentSnapshots
+        documentSnapshots: DocumentSnapshot = await self._collection.document(permissionId).get(transaction=self._transaction)
+        return Permission.fromDocumentSnapshot(documentSnapshots) if documentSnapshots.exists else None
 
     async def set(self, permissionId: str, permission: Permission):
         documentReference = self._collection.document(permissionId)

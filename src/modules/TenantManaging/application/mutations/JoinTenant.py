@@ -25,12 +25,11 @@ class JoinTenant:
     ):
         permissionId = PermissionRepository.nextId(
             tenantId=tenantId, userId=userId)
-        permissionSnapshot = await self._permissionRepository.get(permissionId)
-        if permissionSnapshot.exists:
-            permission = Permission(**permissionSnapshot.to_dict(), id=permissionId, createdAt=permissionSnapshot.create_time, updatedAt=permissionSnapshot.update_time)
-            if permission.status == PermissionStatuses.Rejected:
+        permissionExists = await self._permissionRepository.get(permissionId)
+        if permissionExists:
+            if permissionExists.status == PermissionStatuses.Rejected:
                 raise JoinRequestRejected()
-            elif permission.status == PermissionStatuses.Pending:
+            elif permissionExists.status == PermissionStatuses.Pending:
                 raise JoinRequestAlreadySubmitted()
             else:
                 raise HasJoinedTenant()
@@ -40,8 +39,6 @@ class JoinTenant:
             role=Roles.Member,
             status=PermissionStatuses.Pending,
             id=permissionId,
-            createdAt=None,
-            updatedAt=None,
         )
         await self._permissionRepository.set(permissionId=permissionId, permission=permission)
         return permissionId

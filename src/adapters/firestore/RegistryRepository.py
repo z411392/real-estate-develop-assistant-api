@@ -21,8 +21,8 @@ class RegistryRepository:
         return str(uuid5(UUID(snapshotId), str(index)))
 
     async def get(self, registryId: str):
-        documentSnapshots: DocumentSnapshot = await self._collection.document(registryId).get()
-        return documentSnapshots
+        documentSnapshots: DocumentSnapshot = await self._collection.document(registryId).get(transaction=self._transaction)
+        return Registry.fromDocumentSnapshot(documentSnapshots) if documentSnapshots.exists else None
 
     async def set(self, registryId: str, registry: Registry):
         documentReference = self._collection.document(registryId)

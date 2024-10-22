@@ -1,7 +1,7 @@
 from firebase_admin import db
 from src.modules.SnapshotManaging.dtos.BuildingRegistry import BuildingRegistry
 from typing import Optional
-from src.utils.threads import threadPoolSubmitter
+from src.utils.threads import ThreadPoolExecutor
 from src.modules.SnapshotManaging.dtos.LandRegistry import LandRegistry
 
 
@@ -20,8 +20,8 @@ class RealtimeDatabaseDao:
             ref.set({metadata.列印時間: registryId})
 
     async def touchBuildingRegistry(self, registryId: str, metadata: BuildingRegistry):
-        async with threadPoolSubmitter() as submit:
-            return await submit(self._touchBuildingRegistry, registryId, metadata)
+        async with ThreadPoolExecutor() as execute:
+            return await execute(self._touchBuildingRegistry, registryId, metadata)
 
     def _touchLandRegistry(self, registryId: str, metadata: LandRegistry):
         ref = db.reference(
@@ -36,5 +36,5 @@ class RealtimeDatabaseDao:
             ref.set({metadata.列印時間: registryId})
 
     async def touchLandRegistry(self, registryId: str, metadata: LandRegistry):
-        async with threadPoolSubmitter() as submit:
-            return await submit(self._touchLandRegistry, registryId, metadata)
+        async with ThreadPoolExecutor() as execute:
+            return await execute(self._touchLandRegistry, registryId, metadata)

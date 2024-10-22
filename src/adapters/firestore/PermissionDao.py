@@ -9,7 +9,6 @@ from typing import List, Mapping, Optional
 from operator import itemgetter
 from src.modules.IdentityAndAccessManaging.dtos.Roles import Roles
 from src.modules.IdentityAndAccessManaging.dtos.Permission import Permission
-from datetime import datetime
 
 
 class PermissionDao:
@@ -79,18 +78,9 @@ class PermissionDao:
         ).stream()
         ids: List[str] = []
         mapping: Mapping[str, Permission] = {}
-        async for document in stream:
-            ids.append(document.id)
-            createTime: datetime = document.create_time
-            createdAt = int(createTime.timestamp() * 1000)
-            updateTime: datetime = document.update_time
-            updatedAt = int(updateTime.timestamp() * 1000)
-            mapping[document.id] = Permission(
-                **document.to_dict(),
-                id=document.id,
-                createdAt=createdAt,
-                updatedAt=updatedAt
-            )
+        async for documentSnapshot in stream:
+            ids.append(documentSnapshot.id)
+            mapping[documentSnapshot.id] = Permission.fromDocumentSnapshot(documentSnapshot)
         for permissionId in permissionIds:
             permission: Optional[Permission] = mapping.get(permissionId)
             if permission is None:
@@ -108,7 +98,7 @@ class PermissionDao:
 
     async def underTenant(self, tenantId: str, page: int, limit: int = PageSizes.Users):
         offset = (page - 1) * limit
-        permissionsMap: Mapping[str, Permission] = {}
+        mapping: Mapping[str, Permission] = {}
         stream = (
             self._collection.where(filter=FieldFilter("tenantId", "==", tenantId))
             .limit(limit)
@@ -116,15 +106,6 @@ class PermissionDao:
             .stream()
         )
         async for documentSnapshot in stream:
-            createTime: datetime = documentSnapshot.create_time
-            createdAt = int(createTime.timestamp() * 1000)
-            updateTime: datetime = documentSnapshot.update_time
-            updatedAt = int(updateTime.timestamp() * 1000)
-            permission = Permission(
-                **documentSnapshot.to_dict(),
-                id=documentSnapshot.id,
-                createdAt=createdAt,
-                updatedAt=updatedAt,
-            )
-            permissionsMap[permission.userId] = permission
-        return permissionsMap
+            permission = Permission.fromDocumentSnapshot(documentSnapshot)
+            mapping[permission.userId] = permission
+        return mapping

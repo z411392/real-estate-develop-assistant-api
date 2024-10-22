@@ -4,7 +4,6 @@ from google.cloud.firestore_v1.async_query import AsyncAggregationQuery
 from src.constants import Collections
 from typing import List, Mapping, Optional
 from src.modules.SnapshotManaging.dtos.Registry import Registry
-from datetime import datetime
 
 
 class RegistryDao:
@@ -57,18 +56,9 @@ class RegistryDao:
 
         ids: List[str] = []
         mapping: Mapping[str, Registry] = {}
-        async for document in stream:
-            ids.append(document.id)
-            createTime: datetime = document.create_time
-            createdAt = int(createTime.timestamp() * 1000)
-            updateTime: datetime = document.update_time
-            updatedAt = int(updateTime.timestamp() * 1000)
-            mapping[document.id] = Registry(
-                **document.to_dict(),
-                id=document.id,
-                createdAt=createdAt,
-                updatedAt=updatedAt,
-            )
+        async for documentSnapshot in stream:
+            ids.append(documentSnapshot.id)
+            mapping[documentSnapshot.id] = Registry.fromDocumentSnapshot(documentSnapshot)
         for registryId in registryIds:
             registry: Optional[Registry] = mapping.get(registryId)
             if registry is None:

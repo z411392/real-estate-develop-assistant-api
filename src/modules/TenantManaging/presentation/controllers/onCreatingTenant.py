@@ -4,6 +4,7 @@ from starlette.responses import JSONResponse
 from firebase_admin.firestore_async import client
 from src.modules.TenantManaging.dtos.CreatingTenant import CreatingTenant
 from src.modules.TenantManaging.application.mutations.CreateTenant import CreateTenant
+from src.utils.firestore import Transaction
 
 
 async def onCreatingTenant(request: Request):
@@ -11,7 +12,7 @@ async def onCreatingTenant(request: Request):
     mutation = await CreatingTenant.fromRequest(request)
     db = client()
     payload = dict()
-    async with db.transaction() as transaction:
+    async with Transaction(db) as transaction:
         createTenant = CreateTenant(db=db, transaction=transaction)
         tenantId = await createTenant(credentials.uid, mutation)
         payload.update(tenantId=tenantId)

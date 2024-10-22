@@ -4,6 +4,7 @@ from starlette.responses import JSONResponse
 from src.utils.session import ensureTenantIsSpecified
 from firebase_admin.firestore_async import client
 from src.modules.TenantManaging.application.mutations.JoinTenant import JoinTenant
+from src.utils.firestore import Transaction
 
 
 async def onJoiningTenant(request: Request):
@@ -11,7 +12,7 @@ async def onJoiningTenant(request: Request):
     tenant = ensureTenantIsSpecified(request)
     db = client()
     payload = dict()
-    async with db.transaction() as transaction:
+    async with Transaction(db) as transaction:
         joinTenant = JoinTenant(db=db, transaction=transaction)
         permissionId = await joinTenant(credentials.uid, tenant.id)
         payload.update(permissionId=permissionId)

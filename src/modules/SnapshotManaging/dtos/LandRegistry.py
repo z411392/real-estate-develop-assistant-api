@@ -1,17 +1,17 @@
-from typing import List
+from typing import List, Optional
 from dataclasses import dataclass, field
 
 
 @dataclass
 class 共同擔保建號:
     地段: str
-    小段: str
+    小段: Optional[str]
     建號: str
 
     @staticmethod
     def from_dict(obj: dict) -> "共同擔保建號":
         _地段 = str(obj.get("地段"))
-        _小段 = str(obj.get("小段"))
+        _小段 = str(obj.get("小段")) if obj.get("小段") else None
         _建號 = str(obj.get("建號"))
         return 共同擔保建號(_地段, _小段, _建號)
 
@@ -19,13 +19,13 @@ class 共同擔保建號:
 @dataclass
 class 共同擔保地號:
     地段: str
-    小段: str
+    小段: Optional[str]
     地號: str
 
     @staticmethod
     def from_dict(obj: dict) -> "共同擔保地號":
         _地段 = str(obj.get("地段"))
-        _小段 = str(obj.get("小段"))
+        _小段 = str(obj.get("小段")) if obj.get("小段") else None
         _地號 = str(obj.get("地號"))
         return 共同擔保地號(_地段, _小段, _地號)
 
@@ -186,13 +186,13 @@ class 土地所有權部:
 @dataclass
 class 地上建物建號:
     地段: str
-    小段: str
+    小段: Optional[str]
     建號: str
 
     @staticmethod
     def from_dict(obj: dict) -> "地上建物建號":
         _地段 = str(obj.get("地段"))
-        _小段 = str(obj.get("小段"))
+        _小段 = str(obj.get("小段")) if obj.get("小段") else None
         _地號 = str(obj.get("地號"))
         return 地上建物建號(_地段, _小段, _地號)
 
@@ -201,7 +201,7 @@ class 地上建物建號:
 class 土地標示部:
     登記日期: str
     登記原因: str
-    面積: int
+    面積: str
     使用分區: str
     使用地類別: str
     公告土地現值年月: str
@@ -213,7 +213,7 @@ class 土地標示部:
     def from_dict(obj: dict) -> "土地標示部":
         _登記日期 = str(obj.get("登記日期"))
         _登記原因 = str(obj.get("登記原因"))
-        _面積 = int(obj.get("面積"))
+        _面積 = str(obj.get("面積"))
         _使用分區 = str(obj.get("使用分區"))
         _使用地類別 = str(obj.get("使用地類別"))
         _公告土地現值年月 = str(obj.get("公告土地現值年月"))
@@ -246,7 +246,7 @@ class LandRegistry:
     資料管轄機關: str
     行政區: str
     地段: str
-    小段: str
+    小段: Optional[str]
     地號: str
     土地標示部: List[土地標示部]
     土地所有權部: List["土地所有權部"] = field(default_factory=list)
@@ -262,7 +262,7 @@ class LandRegistry:
         _資料管轄機關 = str(obj.get("資料管轄機關"))
         _行政區 = str(obj.get("行政區"))
         _地段 = str(obj.get("地段"))
-        _小段 = str(obj.get("小段"))
+        _小段 = str(obj.get("小段")) if obj.get("小段") else None
         _地號 = str(obj.get("地號"))
         _土地標示部 = [
             土地標示部.from_dict(每ㄧ土地標示) for 每ㄧ土地標示 in obj.get("土地標示部")

@@ -26,8 +26,8 @@ class SnapshotRepository:
         return str(uuid5(namespace, filePath))
 
     async def get(self, snapshotId: str):
-        documentSnapshots: DocumentSnapshot = await self._collection.document(snapshotId).get()
-        return documentSnapshots
+        documentSnapshots: DocumentSnapshot = await self._collection.document(snapshotId).get(transaction=self._transaction)
+        return Snapshot.fromDocumentSnapshot(documentSnapshots) if documentSnapshots.exists else None
 
     async def set(self, snapshotId: str, snapshot: Snapshot):
         documentReference = self._collection.document(snapshotId)

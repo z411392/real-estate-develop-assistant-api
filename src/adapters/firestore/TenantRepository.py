@@ -2,7 +2,7 @@ from google.cloud.firestore import AsyncClient, AsyncCollectionReference, AsyncT
 from src.constants import Collections
 from uuid import uuid5, UUID
 from os import getenv
-from src.modules.TenantManaging.dtos import Tenant
+from src.modules.TenantManaging.dtos.Tenant import Tenant
 from dataclasses import asdict
 
 
@@ -22,8 +22,8 @@ class TenantRepository:
         return str(uuid5(namespace, name))
 
     async def get(self, tenantId: str):
-        documentSnapshots: DocumentSnapshot = await self._collection.document(tenantId).get()
-        return documentSnapshots
+        documentSnapshots: DocumentSnapshot = await self._collection.document(tenantId).get(transaction=self._transaction)
+        return Tenant.fromDocumentSnapshot(documentSnapshots) if documentSnapshots.exists else None
 
     async def set(self, tenantId: str, tenant: Tenant):
         documentReference = self._collection.document(tenantId)
