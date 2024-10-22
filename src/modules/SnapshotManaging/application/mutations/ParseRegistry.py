@@ -37,20 +37,17 @@ class ParseRegistry:
     async def _parseBuildingRegistry(self, registryId: str, registry: Registry):
         if registry.metadata is not None:
             registry.metadata = BuildingRegistry(**registry.metadata)
-        if (
-            registry.status == RegistryStatuses.Pending or registry.status == RegistryStatuses.Failed
-        ):
-            registry.status = RegistryStatuses.Doing
-            registry.metadata = None
-            await self._registryRepository.set(registryId, registry)
-            try:
-                registry.status = RegistryStatuses.Done
-                registry.metadata = await self._openAIService.parseBuildingRegistry(
-                    registry.text
-                )
-            except Exception:
-                registry.status = RegistryStatuses.Failed
-            await self._registryRepository.set(registryId, registry)
+        registry.status = RegistryStatuses.Doing
+        registry.metadata = None
+        await self._registryRepository.set(registryId, registry)
+        try:
+            registry.status = RegistryStatuses.Done
+            registry.metadata = await self._openAIService.parseBuildingRegistry(
+                registry.text
+            )
+        except Exception:
+            registry.status = RegistryStatuses.Failed
+        await self._registryRepository.set(registryId, registry)
         if registry.metadata is not None:
             metadata: BuildingRegistry = registry.metadata
             await self._realtimeDatabaseDao.touchBuildingRegistry(registryId, metadata)
@@ -59,20 +56,17 @@ class ParseRegistry:
     async def _parseLandRegistry(self, registryId: str, registry: Registry):
         if registry.metadata is not None:
             registry.metadata = LandRegistry(**registry.metadata)
-        if (
-            registry.status == RegistryStatuses.Pending or registry.status == RegistryStatuses.Failed
-        ):
-            registry.status = RegistryStatuses.Doing
-            registry.metadata = None
-            await self._registryRepository.set(registryId, registry)
-            try:
-                registry.status = RegistryStatuses.Done
-                registry.metadata = await self._openAIService.parseLandRegistry(
-                    registry.text
-                )
-            except Exception:
-                registry.status = RegistryStatuses.Failed
-            await self._registryRepository.set(registryId, registry)
+        registry.status = RegistryStatuses.Doing
+        registry.metadata = None
+        await self._registryRepository.set(registryId, registry)
+        try:
+            registry.status = RegistryStatuses.Done
+            registry.metadata = await self._openAIService.parseLandRegistry(
+                registry.text
+            )
+        except Exception:
+            registry.status = RegistryStatuses.Failed
+        await self._registryRepository.set(registryId, registry)
         if registry.metadata is not None:
             metadata: LandRegistry = registry.metadata
             await self._realtimeDatabaseDao.touchLandRegistry(registryId, metadata)
