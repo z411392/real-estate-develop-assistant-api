@@ -33,3 +33,10 @@ class Collections(str, Enum):
 
 
 Root = "TWnYURxLxWSNtBOI3Y2936kPyrg1"
+
+
+class DocumentPaths(str, Enum):
+    Lands = "lands/:city/administrativeDistricts/:administrativeDistrict/sections/:section/subsection/:subsection/parentLotNumbers/:parentLotNumber/subLotNumbers/:subLotNumber/years/:year"
+
+    def __str__(self):
+        return self.value

@@ -5,6 +5,14 @@ from os import getenv
 from asyncio import get_event_loop
 from src.http import createApp
 from uvicorn import Config, Server
+from src.modules.OpenDataManaging.dtos.DataSheetTypes import DataSheetTypes
+from src.modules.OpenDataManaging.presentation.controllers.onLoadingAssessedCurrentLandValues import (
+    onLoadingAssessedCurrentLandValues,
+)
+from src.modules.OpenDataManaging.presentation.controllers.onLoadingZoningClassfications import (
+    onLoadingZoningClassfications,
+)
+from src.bootstrap import bootstrap
 
 app = AsyncTyper()
 
@@ -28,6 +36,15 @@ async def serve(
     return await server.serve()
 
 
-@app.command()
-def load():
-    pass
+@app.async_command()
+async def load(
+    type: Annotated[str, Option(help="type")],
+    city: Annotated[str, Option(help="city")],
+    year: Annotated[int, Option(help="year")],
+):
+    async with bootstrap():
+        if type == DataSheetTypes.AssessedCurrentLandValues:
+            return await onLoadingAssessedCurrentLandValues(city, year)
+
+        if type == DataSheetTypes.ZoningClassifications:
+            return await onLoadingZoningClassfications(city, year)

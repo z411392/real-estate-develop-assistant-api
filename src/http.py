@@ -78,6 +78,9 @@ from src.modules.IdentityAndAccessManaging.presentation.controllers.onListingUse
 from src.modules.IdentityAndAccessManaging.presentation.controllers.onRetrievingPermission import (
     onRetrievingPermission,
 )
+from src.modules.OpenDataManaging.presentation.controllers.onRetrievingLands import (
+    onRetrievingLands,
+)
 from src.modules.IdentityAndAccessManaging.errors.UserUnauthenticated import (
     UserUnauthenticated,
 )
@@ -206,6 +209,7 @@ def createApp():
                         ),
                     ],
                 ),
+                Route("/lands", endpoint=onRetrievingLands, methods=["POST"]),
             ],
         ),
     ]

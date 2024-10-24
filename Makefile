@@ -3,7 +3,7 @@ export
 
 export IMAGE := $(shell echo "asia-east1-docker.pkg.dev/apv-helper/cloud-run/api")
 
-.PHONY: preview test format build deploy lint run
+.PHONY: preview test format build deploy lint load
 
 .ONESHELL:
 preview:
@@ -18,5 +18,5 @@ deploy:
 	@docker push $${IMAGE}
 lint:
 	@flake8 src/
-run:
-	@docker run --env-file=.env -it $${IMAGE} python3 main.py
+load:
+	@ENV=development python main.py load --type=assessedCurrentValues --city=新北市 --year=2024
