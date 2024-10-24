@@ -16,16 +16,16 @@ class Snapshot:
     updatedAt: Optional[int] = field(default_factory=lambda: None)
 
     @staticmethod
-    def from_dict(obj: dict):
+    def from_dict(data: dict):
 
         return Snapshot(
-            id=str(obj.get("id")),
-            name=str(obj.get("name")),
-            type=str(obj.get("type")),
-            filePath=str(obj.get("filePath")),
-            userId=str(obj.get("userId")),
-            createdAt=int(obj.get("createdAt")) if obj.get("createdAt") else None,
-            updatedAt=int(obj.get("updatedAt")) if obj.get("updatedAt") else None,
+            id=str(data.get("id")),
+            name=str(data.get("name")),
+            type=str(data.get("type")),
+            filePath=str(data.get("filePath")),
+            userId=str(data.get("userId")),
+            createdAt=int(data.get("createdAt")) if data.get("createdAt") else None,
+            updatedAt=int(data.get("updatedAt")) if data.get("updatedAt") else None,
         )
 
     @staticmethod

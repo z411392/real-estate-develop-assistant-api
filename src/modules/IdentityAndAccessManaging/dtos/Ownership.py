@@ -17,15 +17,15 @@ class Ownership:
     updatedAt: Optional[int] = field(default_factory=lambda: None)
 
     @staticmethod
-    def from_dict(obj: dict):
+    def from_dict(data: dict):
         return Ownership(
-            id=str(obj.get("id")),
-            ownerId=str(obj.get("ownerId")),
-            ownerType=str(obj.get("ownerType")),
-            resourceId=str(obj.get("resourceId")),
-            resourceType=str(obj.get("resourceType")),
-            createdAt=int(obj.get("createdAt")) if obj.get("createdAt") else None,
-            updatedAt=int(obj.get("updatedAt")) if obj.get("updatedAt") else None,
+            id=str(data.get("id")),
+            ownerId=str(data.get("ownerId")),
+            ownerType=str(data.get("ownerType")),
+            resourceId=str(data.get("resourceId")),
+            resourceType=str(data.get("resourceType")),
+            createdAt=int(data.get("createdAt")) if data.get("createdAt") else None,
+            updatedAt=int(data.get("updatedAt")) if data.get("updatedAt") else None,
         )
 
     @staticmethod

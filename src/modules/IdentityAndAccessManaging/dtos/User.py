@@ -10,12 +10,12 @@ class User:
     updatedAt: int
 
     @staticmethod
-    def from_dict(obj: dict) -> "User":
-        _id = str(obj.get("id"))
-        _displayName = str(obj.get("displayName"))
-        _photoURL = str(obj.get("photoURL"))
-        _createdAt = int(obj.get("createdAt")) if obj.get("createdAt") else None
-        _updatedAt = int(obj.get("updatedAt")) if obj.get("updatedAt") else None
+    def from_dict(data: dict):
+        _id = str(data.get("id"))
+        _displayName = str(data.get("displayName"))
+        _photoURL = str(data.get("photoURL"))
+        _createdAt = int(data.get("createdAt")) if data.get("createdAt") else None
+        _updatedAt = int(data.get("updatedAt")) if data.get("updatedAt") else None
         return User(
             _id,
             _displayName,

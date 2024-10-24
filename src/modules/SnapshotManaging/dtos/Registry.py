@@ -19,17 +19,17 @@ class Registry:
     updatedAt: Optional[int] = field(default_factory=lambda: None)
 
     @staticmethod
-    def from_dict(obj: dict):
+    def from_dict(data: dict):
         return Registry(
-            id=str(obj.get("id")),
-            snapshotId=str(obj.get("snapshotId")),
-            type=str(obj.get("type")),
-            index=int(obj.get("index")),
-            status=str(obj.get("status")),
-            text=str(obj.get("text")),
-            metadata=obj.get("metadata"),
-            createdAt=int(obj.get("createdAt")) if obj.get("createdAt") else None,
-            updatedAt=int(obj.get("updatedAt")) if obj.get("updatedAt") else None,
+            id=str(data.get("id")),
+            snapshotId=str(data.get("snapshotId")),
+            type=str(data.get("type")),
+            index=int(data.get("index")),
+            status=str(data.get("status")),
+            text=str(data.get("text")),
+            metadata=data.get("metadata"),
+            createdAt=int(data.get("createdAt")) if data.get("createdAt") else None,
+            updatedAt=int(data.get("updatedAt")) if data.get("updatedAt") else None,
         )
 
     @staticmethod

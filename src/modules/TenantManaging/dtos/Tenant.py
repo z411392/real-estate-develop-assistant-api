@@ -13,13 +13,13 @@ class Tenant:
     updatedAt: Optional[int] = field(default_factory=lambda: None)
 
     @staticmethod
-    def from_dict(obj: dict):
+    def from_dict(data: dict):
         return Tenant(
-            id=str(obj.get("id")),
-            name=str(obj.get("name")),
-            credits=int(obj.get("credits")),
-            createdAt=int(obj.get("createdAt")) if obj.get("createdAt") else None,
-            updatedAt=int(obj.get("updatedAt")) if obj.get("updatedAt") else None,
+            id=str(data.get("id")),
+            name=str(data.get("name")),
+            credits=int(data.get("credits")),
+            createdAt=int(data.get("createdAt")) if data.get("createdAt") else None,
+            updatedAt=int(data.get("updatedAt")) if data.get("updatedAt") else None,
         )
 
     @staticmethod

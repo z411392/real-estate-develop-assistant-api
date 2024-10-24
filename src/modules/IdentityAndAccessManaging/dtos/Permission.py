@@ -19,15 +19,15 @@ class Permission:
     updatedAt: Optional[int] = field(default_factory=lambda: None)
 
     @staticmethod
-    def from_dict(obj: dict):
+    def from_dict(data: dict):
         return Permission(
-            id=str(obj.get("id")),
-            tenantId=str(obj.get("tenantId")),
-            userId=str(obj.get("userId")),
-            status=str(obj.get("status")),
-            role=str(obj.get("role")),
-            createdAt=int(obj.get("createdAt")) if obj.get("createdAt") else None,
-            updatedAt=int(obj.get("updatedAt")) if obj.get("updatedAt") else None,
+            id=str(data.get("id")),
+            tenantId=str(data.get("tenantId")),
+            userId=str(data.get("userId")),
+            status=str(data.get("status")),
+            role=str(data.get("role")),
+            createdAt=int(data.get("createdAt")) if data.get("createdAt") else None,
+            updatedAt=int(data.get("updatedAt")) if data.get("updatedAt") else None,
         )
 
     @staticmethod
