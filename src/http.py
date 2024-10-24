@@ -1,6 +1,3 @@
-from os import getenv
-from asyncio import BaseEventLoop
-from uvicorn import Config, Server
 from starlette.applications import Starlette
 from starlette.routing import Route, Mount
 from starlette.middleware import Middleware
@@ -220,17 +217,3 @@ def createApp():
         lifespan=lifespan,
     )
     return app
-
-
-def startHttpServer(loop: BaseEventLoop):
-    app = createApp()
-    config = Config(
-        app=app,
-        host="0.0.0.0",
-        port=int(getenv("PORT")),
-        loop=loop,
-        server_header=False,
-        date_header=False,
-    )
-    server = Server(config=config)
-    return server.serve()

@@ -7,7 +7,7 @@ export IMAGE := $(shell echo "asia-east1-docker.pkg.dev/apv-helper/cloud-run/api
 
 .ONESHELL:
 preview:
-	@ENV=development python main.py -s --disable-pytest-warnings
+	@ENV=development python main.py serve
 test:
 	@pytest
 format:
