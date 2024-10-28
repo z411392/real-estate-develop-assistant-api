@@ -22,8 +22,7 @@ class RetrieveSystemInfo:
         uuid = getenv("PROJECT_UUID")
         if uuid is None:
             uuid = await self._systemService.getProductUUID(os)
-        if uuid is not None:
-            systemInfo.update(uuid=uuid)
+        systemInfo.update(uuid=uuid)
         mac = await self._systemService.getMacAddress(os)
         if mac is not None:
             systemInfo.update(mac=mac)
