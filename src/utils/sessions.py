@@ -62,15 +62,14 @@ def ensureTenantIsSpecified(request: Request):
 
 def ensureUserHasPermission(request: Request, mustBeApproved: bool = True, mustBeOwner: bool = False):
     permission: Optional[Permission] = withPermission(request)
-    if permission.userId != Root:
-        if permission is None:
-            raise PermissionDenied()
-        if mustBeApproved:
-            if permission.status != PermissionStatuses.Approved:
-                raise PermissionDenied()
-        if mustBeOwner:
-            if permission.role != Roles.Owner:
-                raise PermissionDenied()
+    if permission is None:
+        raise PermissionDenied()
+    if permission.userId == Root:
+        return permission
+    if mustBeApproved and permission.status != PermissionStatuses.Approved:
+        raise PermissionDenied()
+    if mustBeOwner and permission.role != Roles.Owner:
+        raise PermissionDenied()
     return permission
 
 
