@@ -15,8 +15,8 @@ from src.modules.IdentityAndAccessManaging.presentation.middlewares.withIdentity
 from src.modules.IdentityAndAccessManaging.presentation.middlewares.withPermissionResolving import (
     withPermissionResolving,
 )
-from src.modules.IdentityAndAccessManaging.presentation.middlewares.withOwnershipResolving import (
-    withOwnershipResolving,
+from src.modules.IdentityAndAccessManaging.presentation.middlewares.withSnapshotOwnershipResolving import (
+    withSnapshotOwnershipResolving,
 )
 from src.modules.SystemMaintaining.presentation.controllers.onCheckingLiveness import (
     onCheckingLiveness,
@@ -183,10 +183,7 @@ def createApp():
                 Mount(
                     path="/snapshots/{snapshotId}",
                     middleware=[
-                        Middleware(
-                            withOwnershipResolving,
-                            resourceType=str(Collections.Snapshots),
-                        ),
+                        Middleware(withSnapshotOwnershipResolving),
                     ],
                     routes=[
                         Route(

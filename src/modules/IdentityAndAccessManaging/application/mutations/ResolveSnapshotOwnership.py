@@ -6,7 +6,7 @@ from src.modules.IdentityAndAccessManaging.dtos.OwnerTypes import OwnerTypes
 from src.constants import Collections
 
 
-class ResolveOwnership:
+class ResolveSnapshotOwnership:
     _logger: Logger
     _ownershipDao: OwnershipDao
 
