@@ -1,5 +1,5 @@
 from starlette.requests import Request
-from src.utils.session import ensureUserIsAuthenticated, ensureTenantIsSpecified
+from src.utils.sessions import ensureUserIsAuthenticated, ensureTenantIsSpecified
 from starlette.responses import JSONResponse
 from dataclasses import asdict
 

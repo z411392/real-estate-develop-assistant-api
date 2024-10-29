@@ -5,7 +5,7 @@ from typing import Callable, Coroutine
 import re
 from src.modules.IdentityAndAccessManaging.application.mutations.ResolveCredentials import ResolveCredentials
 from src.modules.IdentityAndAccessManaging.dtos.Credentials import Credentials
-from src.utils.session import SessionKeys
+from src.utils.sessions import SessionKeys
 from typing import Optional
 
 

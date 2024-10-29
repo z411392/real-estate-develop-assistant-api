@@ -1,5 +1,5 @@
 from starlette.requests import Request
-from src.utils.session import ensureUserIsAuthenticated, ensureTenantIsSpecified, ensureUserHasPermission
+from src.utils.sessions import ensureUserIsAuthenticated, ensureTenantIsSpecified, ensureUserHasPermission
 from firebase_admin.firestore_async import client
 from src.modules.SnapshotManaging.application.queries.CountSnapshots import CountSnapshots
 from starlette.responses import Response

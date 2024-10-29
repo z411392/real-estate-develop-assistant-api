@@ -1,7 +1,7 @@
 from starlette.requests import Request
 from starlette.responses import JSONResponse
 from src.modules.SnapshotManaging.application.mutations.UploadSnapshot import UploadSnapshot
-from src.utils.session import ensureUserIsAuthenticated, ensureTenantIsSpecified, ensureUserHasPermission
+from src.utils.sessions import ensureUserIsAuthenticated, ensureTenantIsSpecified, ensureUserHasPermission
 from firebase_admin.firestore_async import client
 from src.modules.SnapshotManaging.dtos.UploadingSnapshot import UploadingSnapshot
 from src.utils.firestore import Transaction

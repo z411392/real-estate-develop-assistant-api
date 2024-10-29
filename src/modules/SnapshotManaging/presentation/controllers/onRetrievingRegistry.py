@@ -1,5 +1,5 @@
 from starlette.requests import Request
-from src.utils.session import (
+from src.utils.sessions import (
     ensureUserIsAuthenticated,
     ensureTenantIsSpecified,
     ensureUserHasPermission,

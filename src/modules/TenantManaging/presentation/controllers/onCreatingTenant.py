@@ -1,5 +1,5 @@
 from starlette.requests import Request
-from src.utils.session import ensureUserIsAuthenticated
+from src.utils.sessions import ensureUserIsAuthenticated
 from starlette.responses import JSONResponse
 from firebase_admin.firestore_async import client
 from src.modules.TenantManaging.dtos.CreatingTenant import CreatingTenant

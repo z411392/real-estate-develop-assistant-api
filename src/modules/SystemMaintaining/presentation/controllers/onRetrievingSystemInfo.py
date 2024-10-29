@@ -1,6 +1,6 @@
 from starlette.responses import JSONResponse
 from starlette.requests import Request
-from src.utils.session import withCredentials
+from src.utils.sessions import withCredentials
 from src.modules.IdentityAndAccessManaging.dtos.Credentials import Credentials
 from src.modules.SystemMaintaining.application.queries.RetrieveSystemInfo import RetrieveSystemInfo
 from typing import Optional

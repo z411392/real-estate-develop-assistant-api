@@ -2,10 +2,10 @@ from starlette.requests import Request
 from starlette.responses import Response
 from starlette.middleware.base import BaseHTTPMiddleware
 from typing import Callable, Coroutine
-from src.utils.session import withCredentials
+from src.utils.sessions import withCredentials
 from firebase_admin.firestore_async import client
 from src.modules.IdentityAndAccessManaging.application.mutations.ResolvePermission import ResolvePermission
-from src.utils.session import SessionKeys
+from src.utils.sessions import SessionKeys
 
 
 class withPermissionResolving(BaseHTTPMiddleware):
