@@ -57,10 +57,8 @@ class OwnershipDao:
         stream = self._collection\
             .where(filter=FieldFilter(FieldPath.document_id(), "in", [self._collection.document(ownershipId) for ownershipId in ownershipIds]))\
             .stream()
-        ids: List[str] = []
         mapping: Mapping[str, Ownership] = {}
         async for documentSnapshot in stream:
-            ids.append(documentSnapshot.id)
             mapping[documentSnapshot.id] = Ownership.fromDocumentSnapshot(documentSnapshot)
         for ownershipId in ownershipIds:
             ownership: Optional[Ownership] = mapping.get(ownershipId)

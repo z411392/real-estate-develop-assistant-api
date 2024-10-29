@@ -76,10 +76,8 @@ class PermissionDao:
                 ],
             )
         ).stream()
-        ids: List[str] = []
         mapping: Mapping[str, Permission] = {}
         async for documentSnapshot in stream:
-            ids.append(documentSnapshot.id)
             mapping[documentSnapshot.id] = Permission.fromDocumentSnapshot(documentSnapshot)
         for permissionId in permissionIds:
             permission: Optional[Permission] = mapping.get(permissionId)

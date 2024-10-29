@@ -22,10 +22,8 @@ class TenantDao:
         stream = self._collection\
             .where(filter=FieldFilter(FieldPath.document_id(), "in", [self._collection.document(tenantId) for tenantId in tenantIds]))\
             .stream()
-        ids: List[str] = []
         mapping: Mapping[str, Tenant] = {}
         async for documentSnapshot in stream:
-            ids.append(documentSnapshot.id)
             mapping[documentSnapshot.id] = Tenant.fromDocumentSnapshot(documentSnapshot)
         for tenantId in tenantIds:
             tenant: Optional[Tenant] = mapping.get(tenantId)

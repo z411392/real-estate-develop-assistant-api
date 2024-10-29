@@ -53,11 +53,8 @@ class RegistryDao:
                 [self._collection.document(registryId) for registryId in registryIds],
             )
         ).stream()
-
-        ids: List[str] = []
         mapping: Mapping[str, Registry] = {}
         async for documentSnapshot in stream:
-            ids.append(documentSnapshot.id)
             mapping[documentSnapshot.id] = Registry.fromDocumentSnapshot(documentSnapshot)
         for registryId in registryIds:
             registry: Optional[Registry] = mapping.get(registryId)

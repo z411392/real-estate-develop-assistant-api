@@ -22,10 +22,8 @@ class SnapshotDao:
         stream = self._collection\
             .where(filter=FieldFilter(FieldPath.document_id(), "in", [self._collection.document(snapshotId) for snapshotId in snapshotIds]))\
             .stream()
-        ids: List[str] = []
         mapping: Mapping[str, Snapshot] = {}
         async for documentSnapshot in stream:
-            ids.append(documentSnapshot.id)
             mapping[documentSnapshot.id] = Snapshot.fromDocumentSnapshot(documentSnapshot)
         for snapshotId in snapshotIds:
             snapshot: Optional[Snapshot] = mapping.get(snapshotId)
