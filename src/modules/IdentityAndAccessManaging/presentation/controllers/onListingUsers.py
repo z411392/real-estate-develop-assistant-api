@@ -11,13 +11,25 @@ from src.modules.IdentityAndAccessManaging.application.queries.ListUsers import 
 from starlette.responses import JSONResponse
 from src.modules.IdentityAndAccessManaging.dtos.ListingUsers import ListingUsers
 from dataclasses import asdict
+from marshmallow import Schema
+from marshmallow.fields import Integer
+from marshmallow.validate import Range
+
+
+def createSchema():
+    QuerySchema = Schema.from_dict({
+        "page": Integer(validate=Range(min=1), missing=1),
+    })
+    schema: Schema = QuerySchema()
+    return schema
 
 
 async def onListingUsers(request: Request):
     credentials = ensureUserIsAuthenticated(request)
     tenant = ensureTenantIsSpecified(request)
     ensureUserHasPermission(request, mustBeOwner=True)
-    query = await ListingUsers.fromRequest(request)
+    schema = createSchema()
+    query = ListingUsers(**schema.load(dict(**request.query_params)))
     db = client()
     listUsers = ListUsers(db=db)
     users = []

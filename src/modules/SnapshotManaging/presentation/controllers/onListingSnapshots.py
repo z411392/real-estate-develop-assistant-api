@@ -13,13 +13,25 @@ from src.adapters.auth.UserDao import UserDao
 from dataclasses import asdict
 from typing import Mapping, Optional
 from src.modules.IdentityAndAccessManaging.dtos.User import User
+from marshmallow import Schema
+from marshmallow.fields import Integer
+from marshmallow.validate import Range
+
+
+def createSchema():
+    QuerySchema = Schema.from_dict({
+        "page": Integer(validate=Range(min=1), missing=1),
+    })
+    schema: Schema = QuerySchema()
+    return schema
 
 
 async def onListingSnapshots(request: Request):
     credentials = ensureUserIsAuthenticated(request)
     tenant = ensureTenantIsSpecified(request)
     ensureUserHasPermission(request)
-    query = await ListingSnapshots.fromRequest(request)
+    schema = createSchema()
+    query = ListingSnapshots(**schema.load(dict(**request.query_params)))
     db = client()
     listSnapshots = ListSnapshots(db=db)
     snapshots = []

@@ -5,13 +5,25 @@ from src.utils.sessions import ensureUserIsAuthenticated, ensureTenantIsSpecifie
 from firebase_admin.firestore_async import client
 from src.modules.SnapshotManaging.dtos.UploadingSnapshot import UploadingSnapshot
 from src.utils.firestore import Transaction
+from marshmallow import Schema
+from marshmallow.fields import String
+
+
+def createSchema():
+    MutationSchema = Schema.from_dict({
+        "name": String(),
+        "content": String(),
+    })
+    schema: Schema = MutationSchema()
+    return schema
 
 
 async def onUploadingSnapshot(request: Request):
     credentials = ensureUserIsAuthenticated(request)
     tenant = ensureTenantIsSpecified(request)
     ensureUserHasPermission(request)
-    mutation = await UploadingSnapshot.fromRequest(request)
+    schema = createSchema()
+    mutation = UploadingSnapshot(**schema.load(dict(**await request.json())))
     db = client()
     payload = dict()
     async with Transaction(db) as transaction:

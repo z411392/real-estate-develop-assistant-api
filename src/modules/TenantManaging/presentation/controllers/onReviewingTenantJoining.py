@@ -13,13 +13,43 @@ from src.modules.TenantManaging.application.mutations.ReviewTenantJoining import
     ReviewTenantJoining,
 )
 from src.utils.firestore import Transaction
+from marshmallow import Schema
+from marshmallow.fields import String
+from marshmallow.validate import OneOf
+from src.modules.IdentityAndAccessManaging.dtos.PermissionStatuses import (
+    PermissionStatuses,
+)
+
+
+def createSchema():
+    MutationSchema = Schema.from_dict(
+        {
+            "permissionId": String(required=True),
+            "status": String(
+                validate=OneOf(
+                    [str(PermissionStatuses.Approved), str(PermissionStatuses.Rejected)]
+                ),
+                required=True,
+            ),
+        }
+    )
+    schema: Schema = MutationSchema()
+    return schema
 
 
 async def onReviewingTenantJoining(request: Request):
     credentials = ensureUserIsAuthenticated(request)
     tenant = ensureTenantIsSpecified(request)
     permission = ensureUserHasPermission(request, mustBeOwner=True)
-    mutation = await ReviewingTenantJoining.fromRequest(request)
+    schema = createSchema()
+    mutation = ReviewingTenantJoining(
+        **schema.load(
+            dict(
+                **await request.json(),
+                permissionId=request.path_params.get("permissionId")
+            )
+        )
+    )
     db = client()
     payload = dict()
     if permission.id == mutation.permissionId:

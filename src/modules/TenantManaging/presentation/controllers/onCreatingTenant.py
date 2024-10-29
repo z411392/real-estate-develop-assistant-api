@@ -6,10 +6,23 @@ from src.modules.TenantManaging.dtos.CreatingTenant import CreatingTenant
 from src.modules.TenantManaging.application.mutations.CreateTenant import CreateTenant
 from src.utils.firestore import Transaction
 
+from marshmallow import Schema
+from marshmallow.fields import String
+from marshmallow.validate import Length
+
+
+def createSchema():
+    MutationSchema = Schema.from_dict({
+        "name": String(validate=Length(1, 15), required=True),
+    })
+    schema: Schema = MutationSchema()
+    return schema
+
 
 async def onCreatingTenant(request: Request):
     credentials = ensureUserIsAuthenticated(request)
-    mutation = await CreatingTenant.fromRequest(request)
+    schema = createSchema()
+    mutation = CreatingTenant(**schema.load(dict(**await request.json())))
     db = client()
     payload = dict()
     async with Transaction(db) as transaction:
