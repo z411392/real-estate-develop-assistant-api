@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from firebase_admin.auth import UserRecord
 
 
 @dataclass
@@ -22,4 +23,14 @@ class User:
             _photoURL,
             _createdAt,
             _updatedAt,
+        )
+
+    @staticmethod
+    def fromUserRecord(userRecord: UserRecord):
+        return User(
+            id=userRecord.uid,
+            photoURL=userRecord.photo_url,
+            displayName=userRecord.display_name,
+            createdAt=userRecord.user_metadata.creation_timestamp,
+            updatedAt=userRecord.user_metadata.last_refresh_timestamp,
         )

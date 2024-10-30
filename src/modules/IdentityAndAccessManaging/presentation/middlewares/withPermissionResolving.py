@@ -20,7 +20,7 @@ class withPermissionResolving(BaseHTTPMiddleware):
         if credentials is None:
             response = await call_next(request)
             return response
-        
+
         tenantId: str = request.path_params.get("tenantId")
         db = client()
         resolvePermission = ResolvePermission(db=db)

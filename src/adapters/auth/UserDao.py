@@ -16,17 +16,11 @@ class UserDao:
         batchSize = 100
         async with ThreadPoolExecutor() as execute:
             for index in range(0, len(userIds), batchSize):
-                users: List[UserRecord] = await execute(
+                userRecords: List[UserRecord] = await execute(
                     self._inIds, *userIds[index: index + batchSize]
                 )
-                for user in users:
-                    yield User(
-                        id=user.uid,
-                        photoURL=user.photo_url,
-                        displayName=user.display_name,
-                        createdAt=user.user_metadata.creation_timestamp,
-                        updatedAt=user.user_metadata.last_refresh_timestamp,
-                    )
+                for userRecord in userRecords:
+                    yield User.fromUserRecord(userRecord)
 
     async def byId(self, userId: str):
         user: Optional[UserRecord] = None
